@@ -5,9 +5,7 @@ import Navigation from '../components/Navigation.astro';
 // 歌曲数据配置
 // 若要置顶某首歌曲，请在该对象中添加 pinned: true 属性
 const mySongs = [
-	{ id: "01", title: "晨光", description: "简单的吉他弹唱，记录一下心情。", date: "2024-03-20", audioUrl: "/songs/song1.mp3", pinned: true },
-	{ id: "02", title: "深夜随笔", description: "午夜即兴创作，虽然不完美但很真实。", date: "2024-03-15", audioUrl: "/songs/song2.mp3" },
-	{ id: "03", title: "翻唱：那些花儿", description: "一直很喜欢这首歌，录了一个自己的版本。", date: "2024-03-10", audioUrl: "/songs/song3.mp3" }
+	{ id: "--", title: "暂未上传", description: "旋律正在酝酿中...", date: "-----", audioUrl: "#", pinned: false }
 ];
 
 // 排序逻辑：置顶优先，其次按日期倒序

@@ -1,0 +1,196 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+
+const allPosts = await getCollection('posts');
+
+const postsByCategory = allPosts.reduce((acc, post) => {
+	const category = post.data.category || '未分类';
+	if (!acc[category]) {
+		acc[category] = [];
+	}
+	acc[category].push(post);
+	return acc;
+}, {} as Record<string, typeof allPosts>);
+
+Object.keys(postsByCategory).forEach(category => {
+	postsByCategory[category].sort((a, b) =>
+		b.data.pubDate.getTime() - a.data.pubDate.getTime()
+	);
+});
+
+const categories = Object.keys(postsByCategory).sort();
+---
+
+<Layout title="生活日志 - Bing's Space" description="记录生活中的每一个平凡与不平凡">
+	<div class="container">
+		<Navigation />
+
+		<div class="page-header">
+			<h1>生活日志</h1>
+			<p>记录生活中的每一个平凡与不平凡</p>
+		</div>
+
+		<div class="categories-grid">
+			{categories.map(category => {
+				const posts = postsByCategory[category];
+				const postCount = posts.length;
+
+				return (
+					<div class="category-section">
+						<div class="category-header">
+							<h2 class="category-badge">{category}</h2>
+							<span class="post-count">{postCount} 篇日志</span>
+						</div>
+						<div class="posts-list">
+							{posts.map(post => (
+								<article class="post-item">
+									<a href={`/posts/${post.slug}`} class="post-link">
+										<h3>{post.data.title}</h3>
+										<p class="description">{post.data.description}</p>
+										<div class="post-meta">
+											<span class="date">
+												{post.data.pubDate.toLocaleDateString('zh-CN', {
+													year: 'numeric',
+													month: 'long',
+													day: 'numeric'
+												})}
+											</span>
+										</div>
+									</a>
+								</article>
+							))}
+						</div>
+					</div>
+				);
+			})}
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 2rem 1rem;
+	}
+
+	.page-header {
+		text-align: center;
+		margin-bottom: 4rem;
+	}
+
+	.page-header h1 {
+		font-size: 3rem;
+		font-weight: 800;
+		margin: 0 0 1rem;
+		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.page-header p {
+		font-size: 1.2rem;
+		color: #64748b;
+		margin: 0;
+	}
+
+	.categories-grid {
+		display: grid;
+		gap: 3rem;
+	}
+
+	.category-section {
+		padding: 1rem 0;
+	}
+
+	.category-header {
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+		gap: 1.5rem;
+		margin-bottom: 2rem;
+		padding-bottom: 1rem;
+		border-bottom: 2px solid #f1f5f9;
+	}
+
+	.category-badge {
+		font-size: 1.4rem;
+		font-weight: 800;
+		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		display: inline-block;
+		margin: 0;
+		border-bottom: 2px solid #3b82f6; /* 加一条底线，显得更稳重 */
+		padding-bottom: 0.2rem;
+	}
+
+	.post-count {
+		color: #94a3b8;
+		font-size: 1rem;
+		font-weight: 600;
+		background: transparent;
+		padding: 0;
+		border-radius: 0;
+		box-shadow: none;
+	}
+
+	.posts-list {
+		display: grid;
+		gap: 1.5rem;
+	}
+
+	.post-item {
+		background: rgba(255, 255, 255, 0.5);
+		border-radius: 16px;
+		padding: 1.5rem;
+		transition: all 0.3s ease;
+		border: 1px solid rgba(255, 255, 255, 0.3);
+	}
+
+	.post-item:hover {
+		background: rgba(255, 255, 255, 0.9);
+		transform: translateX(8px);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+	}
+
+	.post-link {
+		text-decoration: none;
+		display: block;
+	}
+
+	.post-item h3 {
+		font-size: 1.4rem;
+		font-weight: 700;
+		color: #1e293b; /* 回归深色，保持稳重 */
+		margin: 0 0 0.75rem;
+		transition: color 0.3s ease;
+	}
+
+	.post-item:hover h3 {
+		color: #1d4ed8; /* 悬停时颜色深一点 */
+	}
+
+	.description {
+		color: #475569;
+		font-size: 1rem;
+		line-height: 1.8;
+		margin: 0 0 1.25rem;
+	}
+
+	.date {
+		font-size: 0.9rem;
+		color: #64748b; /* 日期回归灰色 */
+		font-weight: 500;
+	}
+
+	@media (max-width: 768px) {
+		.page-header h1 { font-size: 2.2rem; }
+		.category-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+		.post-item:hover { transform: translateY(-4px); }
+	}
+</style>

@@ -1,0 +1,76 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import PersonalInfo from '../components/PersonalInfo.astro';
+import Calendar from '../components/Calendar.astro';
+import SocialLinks from '../components/SocialLinks.astro';
+import LatestArticles from '../components/LatestArticles.astro';
+---
+
+<Layout title="首页 - Bing's Space">
+	<div class="container">
+		<Navigation />
+
+		<div class="header-modules">
+			<div class="module-col"><PersonalInfo /></div>
+			<div class="module-col"><Calendar /></div>
+			<div class="module-col"><SocialLinks /></div>
+		</div>
+
+		<!-- 强力分割线：带有一点阴影和厚度，区分上下 -->
+		<div class="section-divider"></div>
+
+		<main class="main-content">
+			<LatestArticles />
+		</main>
+	</div>
+</Layout>
+
+<style>
+	.container {
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 2rem 1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0; 
+	}
+
+	:global(nav) {
+		margin-bottom: 2rem !important;
+	}
+
+	.header-modules {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr); 
+		gap: 2.5rem;
+		align-items: stretch;
+		width: 100%;
+		margin-bottom: 3rem; /* 模块下方的间距 */
+	}
+
+	/* 核心修改：分割线样式 */
+	.section-divider {
+		width: 100%;
+		height: 4px;
+		background: #f1f5f9; /* 浅灰色背景 */
+		border-radius: 10px;
+		margin: 2rem 0 4rem; /* 增加上下留白 */
+		box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+	}
+
+	.module-col {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+	}
+
+	.main-content {
+		width: 100%;
+		/* 这里不再需要 border-top，因为上面有了 section-divider */
+	}
+
+	@media (max-width: 1200px) {
+		.header-modules { grid-template-columns: 1fr; gap: 3rem; }
+	}
+</style>  

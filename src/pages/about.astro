@@ -1,0 +1,236 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+---
+
+<Layout title="关于我 - Bing's Space" description="了解更多关于冰冰蓝的故事">
+	<div class="container">
+		<Navigation />
+
+		<div class="about-content">
+			<!-- 个人核心信息 -->
+			<div class="hero glass-card">
+				<div class="avatar">
+					<img src="/tx.jpg" alt="冰冰蓝的头像" class="avatar-img" />
+				</div>
+				<h1>冰冰蓝</h1>
+				<p class="subtitle">记录生活，歌唱岁月</p>
+			</div>
+
+			<!-- 个人简介 -->
+			<div class="content-section glass-card">
+				<h2>你好，我是冰冰蓝</h2>
+				<p>
+					欢迎来到我的个人角落！如你所见，这是一个完全由 AI 辅助制作的网页。
+				</p>
+				<p>
+					我并没有系统的代码基础，但我通过与 AI 交流，生成了网页的结构，并不断微调内容。这个过程对我来说既是探索，也是一种乐趣。这里记录了我的一些闲暇时光，包括我的音乐录音和生活日志。
+				</p>
+			</div>
+
+			<!-- 我的兴趣/简历 -->
+			<div class="content-section glass-card">
+				<h2>我的兴趣</h2>
+				<div class="skills-grid">
+					<div class="skill-item">
+						<div class="skill-icon">🖥️</div>
+						<h3>平面设计</h3>
+						<p>热衷于视觉表达与创意构思，喜欢通过色彩与排版传递故事。</p>
+					</div>
+					<div class="skill-item">
+						<div class="skill-icon">🎨</div>
+						<h3>绘画</h3>
+						<p>在画笔间捕捉灵感，无论是随笔速写还是色彩创作，都是我对世界的记录。</p>
+					</div>
+					<div class="skill-item">
+						<div class="skill-icon">🎵</div>
+						<h3>音乐</h3>
+						<p>旋律是生活的避风港，喜欢探索不同风格的音乐，也享受自己录制作品的过程。</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- 关于本站 -->
+			<div class="content-section glass-card">
+				<h2>关于这个主页</h2>
+				<p>
+					建立这个空间的初衷是为了给自己找一个安静的地方，存放那些被时间冲淡的旋律和文字。
+				</p>
+				<ul>
+					<li><b>音乐回响：</b> 存放我录制的每一首曲目，记录那些随风而逝的旋律。</li>
+					<li><b>设计与绘画：</b> 展示我的视觉创作与平面设计，捕捉生活中的色彩与灵感。</li>
+					<li><b>文字与实验：</b> 记录我的思考随笔，以及与 AI 协作构建这个数字空间的见证。</li>
+				</ul>
+				<p>
+					如果你在这里听到了一段喜欢的旋律，或者读到了一篇感同身受的文字，那便是这个空间存在的最大意义。
+				</p>
+			</div>
+
+			<!-- 联系方式 -->
+			<div class="content-section glass-card cta">
+				<h2>建立连接</h2>
+				<p>
+					如果你有任何想聊的，或者对我的歌曲有什么建议，欢迎通过首页的社交链接与我取得联系。
+				</p>
+			</div>
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.container {
+		max-width: 900px;
+		margin: 0 auto;
+		padding: 2rem 1rem;
+	}
+
+	.about-content {
+		display: grid;
+		gap: 2rem;
+	}
+
+	.hero {
+		text-align: center;
+		padding: 3rem 2rem;
+		background: rgba(255, 255, 255, 0.7);
+		border-radius: 24px;
+		display: flex;
+		flex-direction: column;
+		align-items: center; /* 确保所有内容在 Cross Axis 上居中 */
+	}
+
+	.avatar {
+		width: 120px; /* 改为与首页一致的 120px */
+		height: 120px;
+		margin-bottom: 1.5rem;
+		border-radius: 50%;
+		overflow: hidden; /* 强制切圆 */
+		border: 4px solid white;
+		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+		flex-shrink: 0;
+	}
+
+	.avatar-img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	.hero h1 {
+		font-size: 3.2rem;
+		font-weight: 800;
+		margin: 0 0 0.5rem;
+		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.subtitle {
+		font-size: 1.25rem;
+		color: #3b82f6;
+		margin: 0;
+		font-weight: 600;
+		letter-spacing: 2px;
+	}
+
+	.content-section {
+		padding: 2.5rem;
+		background: rgba(255, 255, 255, 0.7);
+		border-radius: 24px;
+		border: 1px solid rgba(255, 255, 255, 0.5);
+	}
+
+	.content-section h2 {
+		font-size: 1.8rem;
+		font-weight: 700;
+		color: #1e293b;
+		margin: 0 0 1.5rem;
+	}
+
+	.content-section p {
+		font-size: 1.05rem;
+		line-height: 1.8;
+		color: #475569;
+		margin: 0 0 1.25rem;
+	}
+
+	.content-section ul {
+		margin: 1.5rem 0;
+		padding-left: 1.2rem;
+		list-style: none;
+	}
+
+	.content-section li {
+		font-size: 1.05rem;
+		line-height: 1.8;
+		color: #475569;
+		margin: 0.75rem 0;
+		position: relative;
+	}
+
+	.content-section li::before {
+		content: "•";
+		color: #6366f1;
+		font-weight: bold;
+		display: inline-block;
+		width: 1em;
+		margin-left: -1em;
+	}
+
+	.skills-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 1.5rem;
+		margin-top: 1rem;
+	}
+
+	.skill-item {
+		text-align: center;
+		padding: 1.5rem;
+		background: white;
+		border-radius: 16px;
+		transition: all 0.3s ease;
+		border: 1px solid rgba(0,0,0,0.03);
+	}
+
+	.skill-item:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+	}
+
+	.skill-icon {
+		font-size: 2.5rem;
+		margin-bottom: 1rem;
+	}
+
+	.skill-item h3 {
+		font-size: 1.2rem;
+		font-weight: 700;
+		color: #1e293b;
+		margin: 0 0 0.5rem;
+	}
+
+	.skill-item p {
+		font-size: 0.9rem;
+		color: #64748b;
+		margin: 0;
+		line-height: 1.5;
+	}
+
+	.cta {
+		text-align: center;
+		background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(37, 99, 235, 0.05) 100%);
+	}
+
+	.cta h2 {
+		color: #2563eb;
+	}
+
+	@media (max-width: 768px) {
+		.hero h1 { font-size: 2.2rem; }
+		.subtitle { font-size: 1.1rem; }
+		.content-section { padding: 1.5rem; }
+	}
+</style>

@@ -1,0 +1,66 @@
+---
+---
+
+<section class="personal-info glass-card">
+	<div class="avatar">
+		<img src="/tx.jpg" alt="头像" class="avatar-img" />
+	</div>
+	<h1>冰冰蓝的个人主页</h1>
+	<p class="tagline">这是冰冰蓝闲来没事用AI制作的个人网页</p>
+	<p class="bio">
+		你也看见了，因为是AI制作的，并且冰冰蓝没有系统代码基础，只能通过AI生成结构然后用其他AI去辅助修改内容~。
+	</p>
+</section>
+
+<style>
+	.personal-info {
+		text-align: center;
+		padding: 2rem;
+		width: 100%;
+		height: 100%;
+		background: rgba(255, 255, 255, 0.7);
+		border-radius: 24px;
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: flex-start; /* 核心修改：让内容从顶部开始排列，不再悬浮在中间 */
+	}
+
+	.avatar {
+		margin: 0 auto 1.5rem;
+		width: 120px;
+		height: 120px;
+		flex-shrink: 0;
+	}
+
+	.avatar-img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border-radius: 50%;
+		box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+	}
+
+	h1 {
+		margin: 0 0 0.75rem;
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: #1e293b;
+	}
+
+	.tagline {
+		font-size: 1.1rem;
+		color: #3899f3;
+		margin: 0 0 1.25rem;
+		font-weight: 600;
+	}
+
+	.bio {
+		color: #475569;
+		line-height: 1.6;
+		max-width: 500px;
+		margin: 0 auto;
+		font-size: 0.95rem;
+	}
+</style>

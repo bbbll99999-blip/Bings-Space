@@ -1,0 +1,125 @@
+---
+import TimeButton from './TimeButton.astro';
+
+const currentDate = new Date();
+const currentMonth = currentDate.getMonth();
+const currentYear = currentDate.getFullYear();
+const currentDay = currentDate.getDate();
+
+const monthNames = [
+	'一月', '二月', '三月', '四月', '五月', '六月',
+	'七月', '八月', '九月', '十月', '十一月', '十二'
+];
+
+const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+
+const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+const emptyDays = Array.from({ length: firstDayOfMonth }, () => null);
+---
+
+<section class="calendar glass-card">
+	<div class="calendar-top">
+		<TimeButton />
+	</div>
+	
+	<div class="calendar-header">
+		<div class="month">{monthNames[currentMonth]} {currentYear}</div>
+	</div>
+
+	<div class="calendar-grid">
+		<div class="day-name">Sun</div>
+		<div class="day-name">Mon</div>
+		<div class="day-name">Tue</div>
+		<div class="day-name">Wed</div>
+		<div class="day-name">Thu</div>
+		<div class="day-name">Fri</div>
+		<div class="day-name">Sat</div>
+		
+		{emptyDays.map(() => (
+			<div class="day empty"></div>
+		))}
+		
+		{days.map((day) => (
+			<div class={`day ${day === currentDay ? 'current' : ''}`}>
+				{day}
+			</div>
+		))}
+	</div>
+</section>
+
+<style>
+	.calendar {
+		padding: 2rem;
+		width: 100%;
+		/* 移除具体的限制，统一使用 100% 填满父容器 */
+		height: 100%;
+		background: rgba(255, 255, 255, 0.7);
+		backdrop-filter: blur(10px);
+		border-radius: 24px;
+		border: 1px solid rgba(255, 255, 255, 0.5);
+		box-sizing: border-box;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.calendar-top {
+		display: flex;
+		justify-content: center;
+		margin-bottom: 1.5rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+	}
+
+	.calendar-header {
+		margin-bottom: 1.25rem;
+	}
+
+	.month {
+		text-align: center;
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: #1e293b;
+		letter-spacing: 1px;
+	}
+
+	.calendar-grid {
+		display: grid;
+		grid-template-columns: repeat(7, 1fr);
+		gap: 0.5rem;
+		flex: 1; /* 让日历格子占据剩余空间 */
+	}
+
+	.day-name {
+		text-align: center;
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: #64748b;
+		padding: 0.5rem 0;
+	}
+
+	.day {
+		aspect-ratio: 1 / 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 0.95rem;
+		font-weight: 600;
+		color: #334155;
+		border-radius: 10px;
+		background: rgba(255, 255, 255, 0.4);
+		transition: all 0.2s ease;
+	}
+
+	.day.current {
+		background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+		color: white;
+		font-weight: 700;
+		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+	}
+
+	.day.empty {
+		background: transparent;
+	}
+</style>

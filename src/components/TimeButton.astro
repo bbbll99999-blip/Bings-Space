@@ -1,0 +1,42 @@
+<!-- src/components/TimeButton.astro -->
+<div class="time-button" id="timeButton">
+  <span id="liveTime">--:--:--</span>
+</div>
+
+<script>
+  function updateTime() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false });
+    const el = document.getElementById('liveTime');
+    if (el) el.textContent = timeStr;
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
+</script>
+
+<style>
+  .time-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    /* 核心修改：缩小字号和宽度 */
+    font-size: 1.4rem; 
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(4px);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #1e293b;
+    width: fit-content;
+    min-width: 140px;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+  .time-button:hover {
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(1.02);
+  }
+</style>

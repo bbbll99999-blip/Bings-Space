@@ -1,0 +1,114 @@
+---
+const mySongs = [
+	{ id: "01", title: "晨光", description: "简单的吉他弹唱，记录一下心情。", date: "2024-03-20", audioUrl: "/songs/song1.mp3" },
+	{ id: "02", title: "深夜随笔", description: "午夜即兴创作，虽然不完美但很真实。", date: "2024-03-15", audioUrl: "/songs/song2.mp3" },
+	{ id: "03", title: "翻唱：那些花儿", description: "一直很喜欢这首歌，录了一个自己的版本。", date: "2024-03-10", audioUrl: "/songs/song3.mp3" }
+];
+---
+
+<section class="song-list-section">
+	<div class="section-header">
+		<h2>音乐日志</h2>
+		<p class="subtitle">单纯记录分享</p>
+	</div>
+
+	<div class="table-wrapper">
+		<table class="song-table">
+			<thead>
+				<tr>
+					<th class="col-id">#</th>
+					<th class="col-main">作品详情</th>
+					<th class="col-date">日期</th>
+					<th class="col-player">试听</th>
+				</tr>
+			</thead>
+			<tbody>
+				{mySongs.map((song) => (
+					<tr>
+						<td class="col-id">{song.id}</td>
+						<td class="col-main">
+							<div class="info-cell">
+								<span class="name">{song.title}</span>
+								<span class="desc">{song.description}</span>
+							</div>
+						</td>
+						<td class="col-date">{song.date}</td>
+						<td class="col-player">
+							<div class="player-cell">
+								<audio controls>
+									<source src={song.audioUrl} type="audio/mpeg" />
+								</audio>
+							</div>
+						</td>
+					</tr>
+				))}
+			</tbody>
+		</table>
+	</div>
+</section>
+
+<style>
+	.song-list-section { width: 100%; padding: 0 1rem; }
+	.section-header { text-align: left; margin-bottom: 3.5rem; }
+	h2 {
+		font-size: 2.4rem;
+		font-weight: 800;
+		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin: 0 0 0.5rem;
+		display: inline-block;
+	}
+	.subtitle { color: #94a3b8; font-size: 1.1rem; }
+
+	.table-wrapper { width: 100%; overflow-x: auto; }
+	.song-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+
+	/* 表头样式：加大间距，更宽敞 */
+	th {
+		padding: 1.5rem 1rem;
+		text-align: left;
+		color: #94a3b8;
+		font-size: 0.8rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 2px;
+		border-bottom: 2px solid #f8fafc;
+	}
+
+	/* 单元格样式：大幅增加 padding-top/bottom 解决“挤在一块” */
+	td {
+		padding: 2.5rem 1rem; /* 显著增加上下高度 */
+		border-bottom: 1px solid #f1f5f9;
+		vertical-align: middle;
+	}
+
+	tr:hover { background: #fafafa; }
+
+	/* 宽度分配 */
+	.col-id { width: 5%; color: #cbd5e1; font-family: 'Courier New', monospace; font-size: 1.2rem; }
+	.col-main { width: 55%; } /* 给标题和描述最多的空间 */
+	.col-date { width: 15%; color: #64748b; font-size: 0.95rem; }
+	.col-player { width: 25%; }
+
+	.info-cell { display: flex; flex-direction: column; gap: 0.6rem; }
+	.name { font-size: 1.3rem; font-weight: 700; color: #1e293b; }
+	.desc { font-size: 1rem; color: #64748b; line-height: 1.6; max-width: 90%; }
+
+	.player-cell audio { width: 100%; height: 38px; border-radius: 10px; }
+
+	/* 移动端适配 */
+	@media (max-width: 900px) {
+		.col-date { display: none; }
+		.col-main { width: 70%; }
+		.col-player { width: 25%; }
+	}
+	@media (max-width: 600px) {
+		th { display: none; }
+		td { display: block; width: 100% !important; padding: 1.5rem 0; border: none; }
+		.name { font-size: 1.2rem; }
+		.player-cell { margin-top: 1rem; }
+		tr { display: block; padding: 2rem 0; border-bottom: 1px solid #eee; }
+	}
+</style>

@@ -61,37 +61,41 @@ const graphicWorks = [
 
 		<div class="page-header">
 			<h1>平面作品</h1>
-			<p>GALLERY OF DESIGNS</p>
+			<p>PORTFOLIO</p>
 		</div>
 
-		<div class="gallery-container">
+		<div class="works-grid">
 			{graphicWorks.map(group => (
 				<div class="time-section">
-					<h2 class="time-header">{group.time}</h2>
-					<div class="image-grid">
+					<h2 class="time-title">
+						<span class="dot"></span>
+						{group.time}
+					</h2>
+					<div class="works-list">
 						{group.works.map(work => (
-							<>
-								{work.previews ? (
-									work.previews.map(img => (
-										<div class="art-card" onclick={`openLightbox('${img.src}', '${work.name} - ${img.title}', '${work.url}')`}>
-											<div class="img-container">
-												<img src={img.src} alt={img.title} loading="lazy" />
-												<div class="overlay">
-													<span class="work-title">{work.name}</span>
-													<span class="img-label">{img.title}</span>
+							<div class="work-card glass-card">
+								<div class="work-header">
+									<h3>{work.name}</h3>
+									<a href={work.url} target="_blank" rel="noopener noreferrer" class="visit-link">
+										访问站点 →
+									</a>
+								</div>
+								
+								{work.previews && (
+									<div class="preview-row">
+										{work.previews.map(img => (
+											<div class="preview-item" onclick={`openLightbox('${img.src}', '${work.name} - ${img.title}', '${work.url}')`}>
+												<img src={img.src} alt={img.title} />
+												<div class="preview-overlay">
+													<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+														<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+													</svg>
 												</div>
 											</div>
-										</div>
-									))
-								) : (
-									<a href={work.url} target="_blank" class="text-card glass-card">
-										<div class="text-content">
-											<h3>{work.name}</h3>
-											<span class="link-hint">点击访问站点 →</span>
-										</div>
-									</a>
+										))}
+									</div>
 								)}
-							</>
+							</div>
 						))}
 					</div>
 				</div>
@@ -141,18 +145,18 @@ const graphicWorks = [
 
 <style>
 	.container {
-		max-width: 1400px;
+		max-width: 1200px;
 		margin: 0 auto;
 		padding: 2rem 1rem;
 	}
 
 	.page-header {
 		text-align: center;
-		margin-bottom: 5rem;
+		margin-bottom: 4rem;
 	}
 
 	.page-header h1 {
-		font-size: 4rem;
+		font-size: 3.5rem;
 		font-weight: 800;
 		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
 		-webkit-background-clip: text;
@@ -168,134 +172,126 @@ const graphicWorks = [
 		margin-top: 0.5rem;
 	}
 
-	.time-section {
-		margin-bottom: 6rem;
+	.works-grid {
+		display: grid;
+		gap: 4rem;
 	}
 
-	.time-header {
+	.time-title {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
 		font-size: 1.5rem;
 		font-weight: 800;
 		color: #1e293b;
 		margin-bottom: 2rem;
-		display: flex;
-		align-items: center;
-		gap: 1rem;
+		border-bottom: 2px solid #e2e8f0;
+		padding-bottom: 0.75rem;
 	}
 
-	.time-header::after {
-		content: '';
-		flex: 1;
-		height: 2px;
-		background: linear-gradient(90deg, #e2e8f0, transparent);
+	.time-title .dot {
+		width: 12px;
+		height: 12px;
+		background: #3b82f6;
+		border-radius: 50%;
 	}
 
-	.image-grid {
+	.works-list {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 		gap: 1.5rem;
-		align-items: start;
 	}
 
-	/* 图片卡片样式 */
-	.art-card {
-		position: relative;
-		cursor: zoom-in;
+	.work-card {
+		padding: 1.5rem;
+		background: rgba(255, 255, 255, 0.8);
 		border-radius: 16px;
-		overflow: hidden;
-		background: #f1f5f9;
-		transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-	}
-
-	.art-card:hover {
-		transform: scale(1.02);
-		z-index: 10;
-		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-	}
-
-	.img-container {
-		position: relative;
-		width: 100%;
-		display: block;
-	}
-
-	.img-container img {
-		width: 100%;
-		height: auto;
-		display: block;
-		object-fit: cover;
-	}
-
-	.overlay {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
-		padding: 2rem 1.5rem 1rem;
-		color: white;
-		opacity: 0;
-		transition: opacity 0.3s ease;
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-	}
-
-	.art-card:hover .overlay {
-		opacity: 1;
-	}
-
-	.work-title {
-		font-weight: 700;
-		font-size: 1.1rem;
-	}
-
-	.img-label {
-		font-size: 0.85rem;
-		opacity: 0.8;
-	}
-
-	/* 纯文字卡片样式（未上传图片时） */
-	.text-card {
-		height: 100%;
-		min-height: 200px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		text-align: center;
-		padding: 2rem;
-		text-decoration: none;
-		border: 1px dashed #cbd5e1;
-		background: rgba(255,255,255,0.5);
 		transition: all 0.3s ease;
 	}
 
-	.text-card:hover {
+	.work-card:hover {
 		background: white;
-		border-color: #3b82f6;
-		transform: translateY(-5px);
+		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.1);
 	}
 
-	.text-card h3 {
-		font-size: 1.1rem;
+	.work-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+	}
+
+	.work-card h3 {
+		font-size: 1.2rem;
+		font-weight: 700;
 		color: #1e293b;
-		margin-bottom: 0.5rem;
+		margin: 0;
 	}
 
-	.link-hint {
-		font-size: 0.85rem;
+	.visit-link {
 		color: #3b82f6;
+		text-decoration: none;
 		font-weight: 600;
+		font-size: 0.9rem;
 	}
 
-	/* Lightbox Modal Styles */
+	/* 核心修改：缩略图排版 */
+	.preview-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
+
+	.preview-item {
+		width: 100px;
+		height: 100px;
+		border-radius: 12px;
+		overflow: hidden;
+		cursor: zoom-in;
+		position: relative;
+		border: 1px solid #e2e8f0;
+		background: #f8fafc;
+	}
+
+	.preview-item img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.3s ease;
+	}
+
+	.preview-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(37, 99, 235, 0.4);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+		opacity: 0;
+		transition: opacity 0.3s ease;
+	}
+
+	.preview-item:hover .preview-overlay {
+		opacity: 1;
+	}
+
+	.preview-item:hover img {
+		transform: scale(1.1);
+	}
+
+	/* Lightbox Styles */
 	.lightbox {
 		position: fixed;
 		top: 0;
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background: rgba(15, 23, 42, 0.95);
-		backdrop-filter: blur(10px);
+		background: rgba(15, 23, 42, 0.9);
+		backdrop-filter: blur(8px);
 		z-index: 1000;
 		display: none;
 		align-items: center;
@@ -311,43 +307,30 @@ const graphicWorks = [
 		max-width: 90%;
 		max-height: 90vh;
 		position: relative;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
+		text-align: center;
 	}
 
 	.lightbox-content img {
 		max-width: 100%;
-		max-height: 75vh;
-		object-fit: contain;
+		max-height: 80vh;
 		border-radius: 8px;
-		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+		box-shadow: 0 25px 50px rgba(0,0,0,0.5);
 	}
 
 	.lightbox-info {
 		margin-top: 1.5rem;
-		text-align: center;
 		color: white;
-	}
-
-	.lightbox-info h3 {
-		font-size: 1.5rem;
-		margin-bottom: 1rem;
 	}
 
 	.btn-visit {
 		display: inline-block;
-		padding: 0.75rem 2rem;
+		margin-top: 1rem;
+		padding: 0.6rem 1.5rem;
 		background: #3b82f6;
 		color: white;
 		text-decoration: none;
 		border-radius: 50px;
-		font-weight: 700;
-		transition: background 0.3s ease;
-	}
-
-	.btn-visit:hover {
-		background: #2563eb;
+		font-weight: 600;
 	}
 
 	.close-btn {
@@ -357,17 +340,10 @@ const graphicWorks = [
 		font-size: 3rem;
 		color: white;
 		cursor: pointer;
-		opacity: 0.5;
-		transition: opacity 0.3s ease;
-	}
-
-	.close-btn:hover {
-		opacity: 1;
 	}
 
 	@media (max-width: 768px) {
-		.page-header h1 { font-size: 2.5rem; }
-		.image-grid { grid-template-columns: 1fr; }
-		.lightbox-content { max-width: 100%; }
+		.work-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+		.preview-item { width: 80px; height: 80px; }
 	}
 </style>

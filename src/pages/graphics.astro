@@ -41,7 +41,15 @@ const graphicWorks = [
 			{ name: "凡优卓 - 旺铺装修", url: "https://vansfashion.en.alibaba.com/" },
 			{ name: "允硕 - 旺铺装修", url: "https://yunshuo666.en.alibaba.com/" },
 			{ name: "尤佳 - 旺铺装修", url: "https://youjiamyy.en.alibaba.com/" },
-			{ name: "鼎盛 - 旺铺装修", url: "https://dingshengdg.en.alibaba.com/" }
+			{ 
+				name: "鼎盛 - 旺铺装修", 
+				url: "https://dingshengdg.en.alibaba.com/",
+				previewImages: [
+					"https://sc01.alicdn.com/kf/A7334df88a1bb4f7c87bee89f5935cbde6.jpg",
+					"https://sc01.alicdn.com/kf/A1d41d33377dc4c179223fae18e9b909e9.png",
+					"https://sc01.alicdn.com/kf/A1a5250c97fff418d8f61da5fe095f28a3.png"
+				]
+			}
 		]
 	}
 ];
@@ -66,6 +74,20 @@ const graphicWorks = [
 					<div class="works-list">
 						{group.works.map(work => (
 							<div class="work-card glass-card">
+								{work.previewImages && work.previewImages.length > 0 && (
+									<div class="image-gallery">
+										<div class="featured-image">
+											<img src={work.previewImages[0]} alt={`${work.name} 预览`} />
+										</div>
+										<div class="thumbnail-row">
+											{work.previewImages.slice(1).map(img => (
+												<div class="thumb">
+													<img src={img} alt="预览缩略图" />
+												</div>
+											))}
+										</div>
+									</div>
+								)}
 								<div class="work-info">
 									<h3>{work.name}</h3>
 									<a href={work.url} target="_blank" rel="noopener noreferrer" class="visit-link">
@@ -85,7 +107,7 @@ const graphicWorks = [
 		</div>
 
 		<div class="footer-note">
-			<p>预览图片正在整理中，稍后补充...</p>
+			<p>预览图片正在持续更新中...</p>
 		</div>
 	</div>
 </Layout>
@@ -147,21 +169,79 @@ const graphicWorks = [
 
 	.works-list {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-		gap: 1.5rem;
+		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+		gap: 2rem;
 	}
 
 	.work-card {
-		padding: 1.5rem;
+		overflow: hidden;
 		transition: transform 0.3s ease, box-shadow 0.3s ease;
 		background: rgba(255, 255, 255, 0.8);
 		border: 1px solid rgba(255, 255, 255, 0.3);
+		display: flex;
+		flex-direction: column;
 	}
 
 	.work-card:hover {
 		transform: translateY(-5px);
-		box-shadow: 0 12px 30px rgba(59, 130, 246, 0.1);
+		box-shadow: 0 12px 30px rgba(59, 130, 246, 0.15);
 		background: white;
+	}
+
+	.image-gallery {
+		width: 100%;
+		background: #f8fafc;
+	}
+
+	.featured-image {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		overflow: hidden;
+		background: #f1f5f9;
+	}
+
+	.featured-image img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.5s ease;
+	}
+
+	.work-card:hover .featured-image img {
+		transform: scale(1.05);
+	}
+
+	.thumbnail-row {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 2px;
+		margin-top: 2px;
+	}
+
+	.thumb {
+		aspect-ratio: 1 / 1;
+		overflow: hidden;
+		background: #f1f5f9;
+	}
+
+	.thumb img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		opacity: 0.8;
+		transition: opacity 0.3s ease;
+	}
+
+	.thumb:hover img {
+		opacity: 1;
+	}
+
+	.work-info {
+		padding: 1.5rem;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
 	}
 
 	.work-card h3 {

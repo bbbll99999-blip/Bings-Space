@@ -44,10 +44,10 @@ const graphicWorks = [
 			{ 
 				name: "鼎盛 - 旺铺装修", 
 				url: "https://dingshengdg.en.alibaba.com/",
-				previewImages: [
-					"https://sc01.alicdn.com/kf/A7334df88a1bb4f7c87bee89f5935cbde6.jpg",
-					"https://sc01.alicdn.com/kf/A1d41d33377dc4c179223fae18e9b909e9.png",
-					"https://sc01.alicdn.com/kf/A1a5250c97fff418d8f61da5fe095f28a3.png"
+				previews: [
+					{ title: "主页轮播", src: "https://sc01.alicdn.com/kf/A7334df88a1bb4f7c87bee89f5935cbde6.jpg" },
+					{ title: "Banner图", src: "https://sc01.alicdn.com/kf/A1d41d33377dc4c179223fae18e9b909e9.png" },
+					{ title: "详情长图", src: "https://sc01.alicdn.com/kf/A1a5250c97fff418d8f61da5fe095f28a3.png" }
 				]
 			}
 		]
@@ -55,228 +55,319 @@ const graphicWorks = [
 ];
 ---
 
-<Layout title="平面作品 - Bing's Space" description="这里展示了我制作的电商平面设计与旺铺装修作品。">
+<Layout title="平面作品 - Bing's Space">
 	<div class="container">
 		<Navigation />
 
 		<div class="page-header">
 			<h1>平面作品</h1>
-			<p>电商视觉设计 / 旺铺全案装修</p>
+			<p>GALLERY OF DESIGNS</p>
 		</div>
 
-		<div class="works-grid">
+		<div class="gallery-container">
 			{graphicWorks.map(group => (
 				<div class="time-section">
-					<h2 class="time-title">
-						<span class="dot"></span>
-						{group.time}
-					</h2>
-					<div class="works-list">
+					<h2 class="time-header">{group.time}</h2>
+					<div class="image-grid">
 						{group.works.map(work => (
-							<div class="work-card glass-card">
-								{work.previewImages && work.previewImages.length > 0 && (
-									<div class="image-gallery">
-										<div class="featured-image">
-											<img src={work.previewImages[0]} alt={`${work.name} 预览`} />
-										</div>
-										<div class="thumbnail-row">
-											{work.previewImages.slice(1).map(img => (
-												<div class="thumb">
-													<img src={img} alt="预览缩略图" />
+							<>
+								{work.previews ? (
+									work.previews.map(img => (
+										<div class="art-card" onclick={`openLightbox('${img.src}', '${work.name} - ${img.title}', '${work.url}')`}>
+											<div class="img-container">
+												<img src={img.src} alt={img.title} loading="lazy" />
+												<div class="overlay">
+													<span class="work-title">{work.name}</span>
+													<span class="img-label">{img.title}</span>
 												</div>
-											))}
+											</div>
 										</div>
-									</div>
-								)}
-								<div class="work-info">
-									<h3>{work.name}</h3>
-									<a href={work.url} target="_blank" rel="noopener noreferrer" class="visit-link">
-										访问站点 
-										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-											<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-											<polyline points="15 3 21 3 21 9"></polyline>
-											<line x1="10" y1="14" x2="21" y2="3"></line>
-										</svg>
+									))
+								) : (
+									<a href={work.url} target="_blank" class="text-card glass-card">
+										<div class="text-content">
+											<h3>{work.name}</h3>
+											<span class="link-hint">点击访问站点 →</span>
+										</div>
 									</a>
-								</div>
-							</div>
+								)}
+							</>
 						))}
 					</div>
 				</div>
 			))}
 		</div>
 
-		<div class="footer-note">
-			<p>预览图片正在持续更新中...</p>
+		<!-- Lightbox Modal -->
+		<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+			<span class="close-btn">&times;</span>
+			<div class="lightbox-content" onclick="event.stopPropagation()">
+				<img id="lightbox-img" src="" alt="" />
+				<div class="lightbox-info">
+					<h3 id="lightbox-title"></h3>
+					<a id="lightbox-link" href="#" target="_blank" class="btn-visit">访问作品网站</a>
+				</div>
+			</div>
 		</div>
 	</div>
 </Layout>
 
+<script is:inline>
+	function openLightbox(src, title, link) {
+		const lightbox = document.getElementById('lightbox');
+		const img = document.getElementById('lightbox-img');
+		const titleEl = document.getElementById('lightbox-title');
+		const linkEl = document.getElementById('lightbox-link');
+
+		img.src = src;
+		titleEl.innerText = title;
+		if (link && link !== '#') {
+			linkEl.href = link;
+			linkEl.style.display = 'inline-block';
+		} else {
+			linkEl.style.display = 'none';
+		}
+		
+		lightbox.classList.add('active');
+		document.body.style.overflow = 'hidden';
+	}
+
+	function closeLightbox() {
+		const lightbox = document.getElementById('lightbox');
+		lightbox.classList.remove('active');
+		document.body.style.overflow = 'auto';
+	}
+</script>
+
 <style>
 	.container {
-		max-width: 1200px;
+		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem 1rem;
 	}
 
 	.page-header {
 		text-align: center;
-		margin-bottom: 4rem;
+		margin-bottom: 5rem;
 	}
 
 	.page-header h1 {
-		font-size: 3.5rem;
+		font-size: 4rem;
 		font-weight: 800;
 		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
-		margin: 0 0 1rem;
+		margin: 0;
 	}
 
 	.page-header p {
-		font-size: 1.25rem;
-		color: #64748b;
-		letter-spacing: 4px;
-		font-weight: 500;
-		text-transform: uppercase;
+		font-size: 1rem;
+		color: #94a3b8;
+		letter-spacing: 0.5rem;
+		margin-top: 0.5rem;
 	}
 
-	.works-grid {
-		display: grid;
-		gap: 4rem;
+	.time-section {
+		margin-bottom: 6rem;
 	}
 
-	.time-title {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
+	.time-header {
 		font-size: 1.5rem;
 		font-weight: 800;
 		color: #1e293b;
 		margin-bottom: 2rem;
-		border-bottom: 2px solid #e2e8f0;
-		padding-bottom: 0.75rem;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
 	}
 
-	.time-title .dot {
-		width: 12px;
-		height: 12px;
-		background: #3b82f6;
-		border-radius: 50%;
-		box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+	.time-header::after {
+		content: '';
+		flex: 1;
+		height: 2px;
+		background: linear-gradient(90deg, #e2e8f0, transparent);
 	}
 
-	.works-list {
+	.image-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-		gap: 2rem;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: 1.5rem;
+		align-items: start;
 	}
 
-	.work-card {
+	/* 图片卡片样式 */
+	.art-card {
+		position: relative;
+		cursor: zoom-in;
+		border-radius: 16px;
 		overflow: hidden;
-		transition: transform 0.3s ease, box-shadow 0.3s ease;
-		background: rgba(255, 255, 255, 0.8);
-		border: 1px solid rgba(255, 255, 255, 0.3);
+		background: #f1f5f9;
+		transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+	}
+
+	.art-card:hover {
+		transform: scale(1.02);
+		z-index: 10;
+		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+	}
+
+	.img-container {
+		position: relative;
+		width: 100%;
+		display: block;
+	}
+
+	.img-container img {
+		width: 100%;
+		height: auto;
+		display: block;
+		object-fit: cover;
+	}
+
+	.overlay {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+		padding: 2rem 1.5rem 1rem;
+		color: white;
+		opacity: 0;
+		transition: opacity 0.3s ease;
 		display: flex;
 		flex-direction: column;
+		gap: 0.25rem;
 	}
 
-	.work-card:hover {
-		transform: translateY(-5px);
-		box-shadow: 0 12px 30px rgba(59, 130, 246, 0.15);
-		background: white;
-	}
-
-	.image-gallery {
-		width: 100%;
-		background: #f8fafc;
-	}
-
-	.featured-image {
-		width: 100%;
-		aspect-ratio: 16 / 9;
-		overflow: hidden;
-		background: #f1f5f9;
-	}
-
-	.featured-image img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		transition: transform 0.5s ease;
-	}
-
-	.work-card:hover .featured-image img {
-		transform: scale(1.05);
-	}
-
-	.thumbnail-row {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 2px;
-		margin-top: 2px;
-	}
-
-	.thumb {
-		aspect-ratio: 1 / 1;
-		overflow: hidden;
-		background: #f1f5f9;
-	}
-
-	.thumb img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		opacity: 0.8;
-		transition: opacity 0.3s ease;
-	}
-
-	.thumb:hover img {
+	.art-card:hover .overlay {
 		opacity: 1;
 	}
 
-	.work-info {
-		padding: 1.5rem;
-		flex: 1;
+	.work-title {
+		font-weight: 700;
+		font-size: 1.1rem;
+	}
+
+	.img-label {
+		font-size: 0.85rem;
+		opacity: 0.8;
+	}
+
+	/* 纯文字卡片样式（未上传图片时） */
+	.text-card {
+		height: 100%;
+		min-height: 200px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		padding: 2rem;
+		text-decoration: none;
+		border: 1px dashed #cbd5e1;
+		background: rgba(255,255,255,0.5);
+		transition: all 0.3s ease;
+	}
+
+	.text-card:hover {
+		background: white;
+		border-color: #3b82f6;
+		transform: translateY(-5px);
+	}
+
+	.text-card h3 {
+		font-size: 1.1rem;
+		color: #1e293b;
+		margin-bottom: 0.5rem;
+	}
+
+	.link-hint {
+		font-size: 0.85rem;
+		color: #3b82f6;
+		font-weight: 600;
+	}
+
+	/* Lightbox Modal Styles */
+	.lightbox {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(15, 23, 42, 0.95);
+		backdrop-filter: blur(10px);
+		z-index: 1000;
+		display: none;
+		align-items: center;
+		justify-content: center;
+		padding: 2rem;
+	}
+
+	.lightbox.active {
+		display: flex;
+	}
+
+	.lightbox-content {
+		max-width: 90%;
+		max-height: 90vh;
+		position: relative;
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
-	}
-
-	.work-card h3 {
-		font-size: 1.15rem;
-		font-weight: 700;
-		color: #1e293b;
-		margin: 0 0 1rem;
-	}
-
-	.visit-link {
-		display: inline-flex;
 		align-items: center;
-		gap: 0.5rem;
-		color: #3b82f6;
-		text-decoration: none;
-		font-weight: 600;
-		font-size: 0.9rem;
-		transition: color 0.2s ease;
 	}
 
-	.visit-link:hover {
-		color: #2563eb;
+	.lightbox-content img {
+		max-width: 100%;
+		max-height: 75vh;
+		object-fit: contain;
+		border-radius: 8px;
+		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 	}
 
-	.footer-note {
-		margin-top: 6rem;
+	.lightbox-info {
+		margin-top: 1.5rem;
 		text-align: center;
-		color: #94a3b8;
-		font-style: italic;
-		border-top: 1px dashed #e2e8f0;
-		padding-top: 2rem;
+		color: white;
+	}
+
+	.lightbox-info h3 {
+		font-size: 1.5rem;
+		margin-bottom: 1rem;
+	}
+
+	.btn-visit {
+		display: inline-block;
+		padding: 0.75rem 2rem;
+		background: #3b82f6;
+		color: white;
+		text-decoration: none;
+		border-radius: 50px;
+		font-weight: 700;
+		transition: background 0.3s ease;
+	}
+
+	.btn-visit:hover {
+		background: #2563eb;
+	}
+
+	.close-btn {
+		position: absolute;
+		top: 2rem;
+		right: 2rem;
+		font-size: 3rem;
+		color: white;
+		cursor: pointer;
+		opacity: 0.5;
+		transition: opacity 0.3s ease;
+	}
+
+	.close-btn:hover {
+		opacity: 1;
 	}
 
 	@media (max-width: 768px) {
 		.page-header h1 { font-size: 2.5rem; }
-		.works-list { grid-template-columns: 1fr; }
+		.image-grid { grid-template-columns: 1fr; }
+		.lightbox-content { max-width: 100%; }
 	}
 </style>

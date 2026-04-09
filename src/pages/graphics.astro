@@ -1,0 +1,202 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+
+const graphicWorks = [
+	{
+		time: "2026年 3月-4月",
+		works: [
+			{ name: "季风服饰 - 旺铺装修", url: "https://monsoonclothing.en.alibaba.com/" },
+			{ name: "宇梦锐 - 旺铺装修", url: "https://ymrlicenseplate.en.alibaba.com/" },
+			{ name: "东升 - 旺铺装修", url: "https://dgkingdom.en.alibaba.com/" },
+			{ name: "六精 - 旺铺装修 (进行中)", url: "#" }
+		]
+	},
+	{
+		time: "2026年 1月",
+		works: [
+			{ name: "铭烨 - 旺铺装修", url: "https://dgmystyle.en.alibaba.com/" },
+			{ name: "骄之阳新版 - 旺铺装修", url: "https://jiaozhiyang25.en.alibaba.com/" },
+			{ name: "鼎盛服饰 - 旺铺装修", url: "https://dsgarment.en.alibaba.com/" },
+			{ name: "博远鑫 - 旺铺装修", url: "https://boyuanxin.en.alibaba.com" },
+			{ name: "崇瑧 - 旺铺装修", url: "https://dgchonzhen.en.alibaba.com/" },
+			{ name: "乾海 - 旺铺装修", url: "https://qianhai888.en.alibaba.com/" },
+			{ name: "禾森 - 旺铺装修", url: "https://cn1574936619azmx.en.alibaba.com/" }
+		]
+	},
+	{
+		time: "2025年 12月",
+		works: [
+			{ name: "佳泰 - 旺铺装修", url: "https://meritascentltd.en.alibaba.com/" },
+			{ name: "擎洲 - 旺铺装修", url: "https://letaron-group.en.alibaba.com/" },
+			{ name: "博远 - 旺铺装修", url: "https://foshanboyuan.en.alibaba.com" },
+			{ name: "英络 - 旺铺装修", url: "https://yingluo888.en.alibaba.com" },
+			{ name: "航程 - 旺铺装修", url: "https://dghangchenggarment.en.alibaba.com" }
+		]
+	},
+	{
+		time: "2025年 10月-11月",
+		works: [
+			{ name: "弘硕 - 旺铺装修", url: "https://cnhongshuofushi.en.alibaba.com/" },
+			{ name: "凡优卓 - 旺铺装修", url: "https://vansfashion.en.alibaba.com/" },
+			{ name: "允硕 - 旺铺装修", url: "https://yunshuo666.en.alibaba.com/" },
+			{ name: "尤佳 - 旺铺装修", url: "https://youjiamyy.en.alibaba.com/" },
+			{ name: "鼎盛 - 旺铺装修", url: "https://dingshengdg.en.alibaba.com/" }
+		]
+	}
+];
+---
+
+<Layout title="平面作品 - Bing's Space" description="这里展示了我制作的电商平面设计与旺铺装修作品。">
+	<div class="container">
+		<Navigation />
+
+		<div class="page-header">
+			<h1>平面作品</h1>
+			<p>电商视觉设计 / 旺铺全案装修</p>
+		</div>
+
+		<div class="works-grid">
+			{graphicWorks.map(group => (
+				<div class="time-section">
+					<h2 class="time-title">
+						<span class="dot"></span>
+						{group.time}
+					</h2>
+					<div class="works-list">
+						{group.works.map(work => (
+							<div class="work-card glass-card">
+								<div class="work-info">
+									<h3>{work.name}</h3>
+									<a href={work.url} target="_blank" rel="noopener noreferrer" class="visit-link">
+										访问站点 
+										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+											<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+											<polyline points="15 3 21 3 21 9"></polyline>
+											<line x1="10" y1="14" x2="21" y2="3"></line>
+										</svg>
+									</a>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			))}
+		</div>
+
+		<div class="footer-note">
+			<p>预览图片正在整理中，稍后补充...</p>
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 2rem 1rem;
+	}
+
+	.page-header {
+		text-align: center;
+		margin-bottom: 4rem;
+	}
+
+	.page-header h1 {
+		font-size: 3.5rem;
+		font-weight: 800;
+		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin: 0 0 1rem;
+	}
+
+	.page-header p {
+		font-size: 1.25rem;
+		color: #64748b;
+		letter-spacing: 4px;
+		font-weight: 500;
+		text-transform: uppercase;
+	}
+
+	.works-grid {
+		display: grid;
+		gap: 4rem;
+	}
+
+	.time-title {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		font-size: 1.5rem;
+		font-weight: 800;
+		color: #1e293b;
+		margin-bottom: 2rem;
+		border-bottom: 2px solid #e2e8f0;
+		padding-bottom: 0.75rem;
+	}
+
+	.time-title .dot {
+		width: 12px;
+		height: 12px;
+		background: #3b82f6;
+		border-radius: 50%;
+		box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+	}
+
+	.works-list {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: 1.5rem;
+	}
+
+	.work-card {
+		padding: 1.5rem;
+		transition: transform 0.3s ease, box-shadow 0.3s ease;
+		background: rgba(255, 255, 255, 0.8);
+		border: 1px solid rgba(255, 255, 255, 0.3);
+	}
+
+	.work-card:hover {
+		transform: translateY(-5px);
+		box-shadow: 0 12px 30px rgba(59, 130, 246, 0.1);
+		background: white;
+	}
+
+	.work-card h3 {
+		font-size: 1.15rem;
+		font-weight: 700;
+		color: #1e293b;
+		margin: 0 0 1rem;
+	}
+
+	.visit-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		color: #3b82f6;
+		text-decoration: none;
+		font-weight: 600;
+		font-size: 0.9rem;
+		transition: color 0.2s ease;
+	}
+
+	.visit-link:hover {
+		color: #2563eb;
+	}
+
+	.footer-note {
+		margin-top: 6rem;
+		text-align: center;
+		color: #94a3b8;
+		font-style: italic;
+		border-top: 1px dashed #e2e8f0;
+		padding-top: 2rem;
+	}
+
+	@media (max-width: 768px) {
+		.page-header h1 { font-size: 2.5rem; }
+		.works-list { grid-template-columns: 1fr; }
+	}
+</style>

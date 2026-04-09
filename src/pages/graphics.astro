@@ -335,12 +335,30 @@ const graphicWorks = [
 	}
 
 	.close-btn {
-		position: absolute;
-		top: 2rem;
+		position: fixed; /* 固定在窗口，不随图片滚动 */
+		top: 1.5rem;
 		right: 2rem;
-		font-size: 3rem;
+		width: 3rem;
+		height: 3rem;
+		background: rgba(255, 255, 255, 0.1);
+		backdrop-filter: blur(5px);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 2.5rem;
 		color: white;
 		cursor: pointer;
+		z-index: 1100; /* 确保在最上层 */
+		transition: all 0.3s ease;
+		line-height: 1;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+	}
+
+	.close-btn:hover {
+		background: rgba(255, 255, 255, 0.2);
+		transform: rotate(90deg);
+		border-color: rgba(255, 255, 255, 0.5);
 	}
 
 	@media (max-width: 768px) {

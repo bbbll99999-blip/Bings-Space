@@ -20,7 +20,16 @@ const graphicWorks = [
 			{ name: "鼎盛服饰 - 旺铺装修", url: "https://dsgarment.en.alibaba.com/" },
 			{ name: "博远鑫 - 旺铺装修", url: "https://boyuanxin.en.alibaba.com" },
 			{ name: "崇瑧 - 旺铺装修", url: "https://dgchonzhen.en.alibaba.com/" },
-			{ name: "乾海 - 旺铺装修", url: "https://qianhai888.en.alibaba.com/" },
+			{ 
+				name: "乾海 - 旺铺装修", 
+				url: "https://qianhai888.en.alibaba.com/",
+				previews: [
+					{ title: "乾海主页", src: "https://sc01.alicdn.com/kf/A1b788a9e49834e9eb34b48e2d99f8d317.png" },
+					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/A2d69058d3cbb4effaac6fd9a0182f95ck.png" },
+					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/A8b642629bdda45c6ab7ec4a1bebeb8c71.png" },
+					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/A38ba5b7a5f4c4e7da4d86ef25e21fd1ae.png" }
+				]
+			},
 			{ 
 				name: "禾森 - 旺铺装修", 
 				url: "https://cn1574936619azmx.en.alibaba.com/",
@@ -152,7 +161,7 @@ const graphicWorks = [
 
 		<div class="page-header">
 			<h1>平面作品</h1>
-			<p>PORTFOLIO</p>
+			<p class="disclaimer">本页面仅作为个人设计作品的整理与分享，页面内展示的店铺及品牌版权归原所有者所有。</p>
 		</div>
 
 		<div class="works-grid">
@@ -256,11 +265,16 @@ const graphicWorks = [
 		margin: 0;
 	}
 
-	.page-header p {
-		font-size: 1rem;
+	.page-header p.disclaimer {
+		font-size: 0.9rem;
 		color: #94a3b8;
-		letter-spacing: 0.5rem;
-		margin-top: 0.5rem;
+		letter-spacing: 1px;
+		margin-top: 1rem;
+		font-style: italic;
+		max-width: 600px;
+		margin-left: auto;
+		margin-right: auto;
+		line-height: 1.6;
 	}
 
 	.works-grid {

@@ -494,12 +494,32 @@ const graphicWorks = [
 		<!-- Lightbox Modal -->
 		<div id="lightbox" class="lightbox" onclick="closeLightbox()">
 			<span class="close-btn" onclick="closeLightbox()">&times;</span>
+
+			<!-- 左右切换：点击画面左/右两侧区域 -->
+			<button class="lb-nav lb-prev" type="button" aria-label="上一张"
+				onclick="event.stopPropagation(); navigateLightbox(-1)">
+				<span class="lb-nav-badge">
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M15 18l-6-6 6-6"/>
+					</svg>
+				</span>
+			</button>
+			<button class="lb-nav lb-next" type="button" aria-label="下一张"
+				onclick="event.stopPropagation(); navigateLightbox(1)">
+				<span class="lb-nav-badge">
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M9 18l6-6-6-6"/>
+					</svg>
+				</span>
+			</button>
+
 			<div class="lightbox-content" onclick="event.stopPropagation()">
 				<div class="lightbox-stage">
 					<div class="lightbox-spinner" id="lightbox-spinner" aria-hidden="true"></div>
 					<img id="lightbox-img" src="" alt="" decoding="async" />
 				</div>
 				<div class="lightbox-info">
+					<div class="lightbox-counter" id="lightbox-counter"></div>
 					<h3 id="lightbox-title"></h3>
 					<div class="lightbox-actions">
 						<a id="lightbox-link" href="#" target="_blank" rel="noopener noreferrer" class="btn-visit">访问作品网站</a>
@@ -511,12 +531,24 @@ const graphicWorks = [
 </Layout>
 
 <script is:inline>
-	function openLightbox(src, title, link) {
+	// 灯箱状态：当前作品卡内的图片序列（在同一项目内循环切换）
+	let lbItems = [];
+	let lbIndex = -1;
+
+	// 显示序列中第 i 张（越界自动首尾循环）
+	function showLightboxAt(i) {
+		if (!lbItems.length) return;
+		lbIndex = (i + lbItems.length) % lbItems.length;
+
+		const item = lbItems[lbIndex];
 		const lightbox = document.getElementById('lightbox');
 		const img = document.getElementById('lightbox-img');
 		const titleEl = document.getElementById('lightbox-title');
 		const linkEl = document.getElementById('lightbox-link');
 		const spinner = document.getElementById('lightbox-spinner');
+		const counterEl = document.getElementById('lightbox-counter');
+
+		const src = item.dataset.preview;
 
 		// 先显示加载指示，避免长图出现空白
 		spinner.style.display = 'block';
@@ -531,8 +563,11 @@ const graphicWorks = [
 		};
 
 		img.src = src;
-		titleEl.innerText = title;
+		img.alt = item.dataset.title || '';
+		titleEl.textContent = item.dataset.title || '';
+		counterEl.textContent = `${lbIndex + 1} / ${lbItems.length}`;
 
+		const link = item.dataset.link;
 		if (link && link !== '#') {
 			linkEl.href = link;
 			linkEl.style.display = 'inline-block';
@@ -542,28 +577,59 @@ const graphicWorks = [
 
 		lightbox.classList.add('active');
 		document.body.style.overflow = 'hidden';
+		// 长图切换后回到顶部，避免停留在上一张的滚动位置
+		lightbox.scrollTop = 0;
+	}
+
+	function navigateLightbox(delta) {
+		if (!lbItems.length) return;
+		showLightboxAt(lbIndex + delta);
+	}
+
+	// 从被点击的缩略图打开，并锁定同项目内的图片序列
+	function openLightboxFromEl(item) {
+		const card = item.closest('.work-card') || document;
+		lbItems = Array.from(card.querySelectorAll('.preview-item'));
+		showLightboxAt(lbItems.indexOf(item));
+	}
+
+	// 兼容旧调用
+	function openLightbox(src, title, link) {
+		lbItems = [{ dataset: { preview: src, title: title, link: link } }];
+		showLightboxAt(0);
 	}
 
 	function closeLightbox() {
 		const lightbox = document.getElementById('lightbox');
 		lightbox.classList.remove('active');
 		document.body.style.overflow = 'auto';
+		lbItems = [];
+		lbIndex = -1;
 	}
 
 	// 事件委托：缩略图点击 / 键盘回车
 	document.addEventListener('click', (e) => {
 		const item = e.target.closest('.preview-item');
 		if (!item) return;
-		openLightbox(item.dataset.preview, item.dataset.title, item.dataset.link);
+		openLightboxFromEl(item);
 	});
 
 	document.addEventListener('keydown', (e) => {
+		const lightbox = document.getElementById('lightbox');
+		const isOpen = lightbox.classList.contains('active');
+
 		if (e.key === 'Escape') { closeLightbox(); return; }
+
+		if (isOpen) {
+			if (e.key === 'ArrowLeft') { e.preventDefault(); navigateLightbox(-1); return; }
+			if (e.key === 'ArrowRight') { e.preventDefault(); navigateLightbox(1); return; }
+		}
+
 		if (e.key === 'Enter' || e.key === ' ') {
 			const item = e.target.closest?.('.preview-item');
 			if (item) {
 				e.preventDefault();
-				openLightbox(item.dataset.preview, item.dataset.title, item.dataset.link);
+				openLightboxFromEl(item);
 			}
 		}
 	});
@@ -756,6 +822,73 @@ const graphicWorks = [
 		justify-content: center;
 	}
 
+	/* 左右切换：固定贴边，长图滚动时始终可见 */
+	.lb-nav {
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		width: max(72px, 25vw);
+		min-width: 72px;
+		max-width: 380px;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		display: flex;
+		align-items: center;
+		color: #ffffff;
+		cursor: pointer;
+		z-index: 1100;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.25s ease, background 0.25s ease;
+	}
+
+	.lb-prev { left: 0; justify-content: flex-start; padding-left: 1.25rem; }
+	.lb-next { right: 0; justify-content: flex-end; padding-right: 1.25rem; }
+
+	.lightbox.active .lb-nav {
+		opacity: 0.55;
+		pointer-events: auto;
+	}
+
+	.lb-nav:hover {
+		opacity: 1;
+		background: linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0));
+	}
+
+	.lb-next:hover {
+		background: linear-gradient(270deg, rgba(255,255,255,0.08), rgba(255,255,255,0));
+	}
+
+	.lb-nav-badge {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		background: rgba(15, 23, 42, 0.55);
+		border: 1px solid rgba(255, 255, 255, 0.28);
+		backdrop-filter: blur(6px);
+		transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+	}
+
+	.lb-nav:hover .lb-nav-badge {
+		background: rgba(59, 130, 246, 0.85);
+		border-color: rgba(255, 255, 255, 0.6);
+	}
+
+	.lb-prev:hover .lb-nav-badge { transform: translateX(-3px); }
+	.lb-next:hover .lb-nav-badge { transform: translateX(3px); }
+
+	.lightbox-counter {
+		font-size: 0.82rem;
+		letter-spacing: 0.08em;
+		color: #94a3b8;
+		margin-bottom: 0.35rem;
+		font-variant-numeric: tabular-nums;
+	}
+
 	.lightbox-spinner {
 		position: absolute;
 		top: 50%;
@@ -822,7 +955,7 @@ const graphicWorks = [
 		font-size: 2.5rem;
 		color: white;
 		cursor: pointer;
-		z-index: 1100; /* 确保在最上层 */
+		z-index: 1200; /* 高于左右切换区，确保可点 */
 		transition: all 0.3s ease;
 		line-height: 1;
 		border: 1px solid rgba(255, 255, 255, 0.2);

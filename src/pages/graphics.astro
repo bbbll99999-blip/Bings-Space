@@ -2,6 +2,15 @@
 import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 
+// ── 关于图片优化的重要说明 ─────────────────────────────────────
+// 曾尝试用阿里 CDN 的 "_宽x高.jpg" 后缀做实时缩放（可把 297MB 压到 0.7MB），
+// 但实测该缩放服务【极不稳定】：同一个地址会时而返回 200、时而返回 404，
+// 导致页面上大量图片变成破图。原图地址则 100% 稳定（76/78 返回 200，
+// 仅 2 张早已失效的图返回 403）。
+//
+// 结论：本页一律直接使用原图地址，不做任何 CDN 缩放，确保图片必定显示。
+// 若日后要优化体积，应改用「本地压缩后放进 public/」的方案，不要依赖该 CDN 缩放。
+
 const graphicWorks = [
 	{
 		time: "2026年 3月-4月",
@@ -28,7 +37,16 @@ const graphicWorks = [
 					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/A1647f8d65ed747acbbf4f597038d1f47v.png" }
 				]
 			},
-			{ name: "东升 - 旺铺装修", url: "https://dgkingdom.en.alibaba.com/" },
+			{
+				name: "东升 - 旺铺装修",
+				url: "https://dgkingdom.en.alibaba.com/",
+				previews: [
+					{ title: "东升纱布 BANNER 1", src: "/graphics/dongsheng/banner1.jpg" },
+					{ title: "东升纱布 BANNER 2", src: "/graphics/dongsheng/banner2.jpg" },
+					{ title: "东升纱布 BANNER 3", src: "/graphics/dongsheng/banner3.jpg" },
+					{ title: "东升纱布 PC 主页", src: "/graphics/dongsheng/pc.jpg" }
+				]
+			},
 			{ name: "鑫瑞 - 旺铺装修 (进行中)", url: "#" }
 		]
 	},
@@ -249,8 +267,22 @@ const graphicWorks = [
 								{work.previews && (
 									<div class="preview-row">
 										{work.previews.map(img => (
-											<div class="preview-item" onclick={`openLightbox('${img.src}', '${work.name} - ${img.title}', '${work.url}')`}>
-												<img src={img.src} alt={img.title} />
+											<div
+												class="preview-item"
+												role="button"
+												tabindex="0"
+												data-preview={img.src}
+												data-title={`${work.name} - ${img.title}`}
+												data-link={work.url}
+											>
+												<img
+													src={img.src}
+													alt={img.title}
+													width="48"
+													height="48"
+													loading="lazy"
+													decoding="async"
+												/>
 												<div class="preview-overlay">
 													<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 														<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
@@ -269,12 +301,17 @@ const graphicWorks = [
 
 		<!-- Lightbox Modal -->
 		<div id="lightbox" class="lightbox" onclick="closeLightbox()">
-			<span class="close-btn">&times;</span>
+			<span class="close-btn" onclick="closeLightbox()">&times;</span>
 			<div class="lightbox-content" onclick="event.stopPropagation()">
-				<img id="lightbox-img" src="" alt="" />
+				<div class="lightbox-stage">
+					<div class="lightbox-spinner" id="lightbox-spinner" aria-hidden="true"></div>
+					<img id="lightbox-img" src="" alt="" decoding="async" />
+				</div>
 				<div class="lightbox-info">
 					<h3 id="lightbox-title"></h3>
-					<a id="lightbox-link" href="#" target="_blank" class="btn-visit">访问作品网站</a>
+					<div class="lightbox-actions">
+						<a id="lightbox-link" href="#" target="_blank" rel="noopener noreferrer" class="btn-visit">访问作品网站</a>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -287,16 +324,30 @@ const graphicWorks = [
 		const img = document.getElementById('lightbox-img');
 		const titleEl = document.getElementById('lightbox-title');
 		const linkEl = document.getElementById('lightbox-link');
+		const spinner = document.getElementById('lightbox-spinner');
+
+		// 先显示加载指示，避免长图出现空白
+		spinner.style.display = 'block';
+		img.style.opacity = '0';
+		img.onload = () => {
+			spinner.style.display = 'none';
+			img.style.opacity = '1';
+		};
+		img.onerror = () => {
+			spinner.style.display = 'none';
+			img.style.opacity = '1';
+		};
 
 		img.src = src;
 		titleEl.innerText = title;
+
 		if (link && link !== '#') {
 			linkEl.href = link;
 			linkEl.style.display = 'inline-block';
 		} else {
 			linkEl.style.display = 'none';
 		}
-		
+
 		lightbox.classList.add('active');
 		document.body.style.overflow = 'hidden';
 	}
@@ -306,6 +357,24 @@ const graphicWorks = [
 		lightbox.classList.remove('active');
 		document.body.style.overflow = 'auto';
 	}
+
+	// 事件委托：缩略图点击 / 键盘回车
+	document.addEventListener('click', (e) => {
+		const item = e.target.closest('.preview-item');
+		if (!item) return;
+		openLightbox(item.dataset.preview, item.dataset.title, item.dataset.link);
+	});
+
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape') { closeLightbox(); return; }
+		if (e.key === 'Enter' || e.key === ' ') {
+			const item = e.target.closest?.('.preview-item');
+			if (item) {
+				e.preventDefault();
+				openLightbox(item.dataset.preview, item.dataset.title, item.dataset.link);
+			}
+		}
+	});
 </script>
 
 <style>
@@ -425,6 +494,11 @@ const graphicWorks = [
 		transition: transform 0.2s ease;
 	}
 
+	.preview-item:focus-visible {
+		outline: 2px solid #3b82f6;
+		outline-offset: 2px;
+	}
+
 	.preview-item:hover {
 		transform: scale(1.1) translateY(-2px);
 		border-color: #3b82f6;
@@ -480,17 +554,54 @@ const graphicWorks = [
 		align-items: center;
 	}
 
+	/* 图片舞台：为加载指示器提供定位基准，并预留最小高度避免布局跳动 */
+	.lightbox-stage {
+		position: relative;
+		width: 100%;
+		min-height: 240px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.lightbox-spinner {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 40px;
+		height: 40px;
+		margin: -20px 0 0 -20px;
+		border: 3px solid rgba(255, 255, 255, 0.25);
+		border-top-color: #3b82f6;
+		border-radius: 50%;
+		animation: lb-spin 0.8s linear infinite;
+		display: none;
+	}
+
+	@keyframes lb-spin {
+		to { transform: rotate(360deg); }
+	}
+
 	.lightbox-content img {
 		width: 100%; /* 宽度占满容器 */
 		height: auto; /* 高度自适应，允许长图展开 */
 		border-radius: 8px;
 		box-shadow: 0 25px 50px rgba(0,0,0,0.5);
 		cursor: default;
+		transition: opacity 0.3s ease;
 	}
 
 	.lightbox-info {
 		margin-top: 1.5rem;
 		color: white;
+	}
+
+	.lightbox-actions {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+		flex-wrap: wrap;
 	}
 
 	.btn-visit {

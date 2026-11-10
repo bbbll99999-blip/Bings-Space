@@ -1,6 +1,3 @@
----
----
-
 <section class="social-links glass-card">
 	<h2>联系我</h2>
 	<div class="links">
@@ -36,7 +33,6 @@
 	.social-links {
 		padding: 2rem;
 		width: 100%;
-		/* 移除最大宽度限制，让它和个人信息一样宽 */
 		margin: 0;
 		display: flex;
 		flex-direction: column;
@@ -44,7 +40,7 @@
 		background: rgba(255, 255, 255, 0.7);
 		border-radius: 24px;
 		box-sizing: border-box;
-		height: 100%; /* 拉伸填满容器 */
+		height: 100%;
 	}
 
 	h2 {
@@ -57,11 +53,11 @@
 
 	.links {
 		display: grid;
-		/* 使用 1fr 让按钮填满空间 */
 		grid-template-columns: repeat(2, 1fr);
+		grid-auto-rows: 1fr;
 		gap: 1.25rem;
 		width: 100%;
-		flex: 1; /* 让链接区域占据剩余空间 */
+		flex: 1;
 	}
 
 	.social-link {
@@ -70,20 +66,20 @@
 		align-items: center;
 		justify-content: center;
 		gap: 0.75rem;
-		padding: 1.5rem 1rem;
+		padding: 0.75rem 0.5rem;
 		width: 100%;
-		aspect-ratio: 1 / 1; /* 保持正方形 */
+		min-width: 0;
 		background: white;
 		border-radius: 16px;
 		text-decoration: none;
 		color: #475569;
 		transition: all 0.3s ease;
-		border: 1px solid rgba(0,0,0,0.05);
+		border: 1px solid rgba(0, 0, 0, 0.05);
 		box-sizing: border-box;
 	}
 
 	.social-link:hover {
-		background: rgba(102, 126, 234, 0.05);
+		background: rgba(59, 130, 246, 0.06);
 		transform: translateY(-4px);
 		box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
 	}
@@ -92,10 +88,31 @@
 		width: 32px;
 		height: 32px;
 		color: #3b82f6;
+		flex-shrink: 0;
 	}
 
 	.social-link span {
 		font-size: 1rem;
 		font-weight: 600;
+		color: #475569;
+	}
+
+	@media (max-width: 480px) {
+		.social-links {
+			padding: 1.5rem;
+		}
+
+		.social-link {
+			padding: 0.6rem 0.4rem;
+		}
+
+		.social-link span {
+			font-size: 0.85rem;
+		}
+
+		.social-link svg {
+			width: 28px;
+			height: 28px;
+		}
 	}
 </style>

@@ -42,8 +42,9 @@ import LatestArticles from '../components/LatestArticles.astro';
 
 	.header-modules {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr); 
-		gap: 2.5rem;
+		/* minmax(0, 1fr) 防止内容撑破列宽导致卡片溢出容器 */
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1.5rem; /* 减小间距，给模块更多呼吸空间 */
 		align-items: stretch;
 		width: 100%;
 		margin-bottom: 3rem; /* 模块下方的间距 */
@@ -61,8 +62,17 @@ import LatestArticles from '../components/LatestArticles.astro';
 
 	.module-col {
 		width: 100%;
+		min-width: 0;
 		display: flex;
 		justify-content: center;
+		align-items: stretch;
+	}
+
+	/* 保证三栏内的卡片高度完全对齐，且不超过所属列宽 */
+	.module-col > :global(*) {
+		width: 100%;
+		max-width: 100%;
+		height: 100%;
 	}
 
 	.main-content {

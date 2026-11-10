@@ -2,14 +2,17 @@
 import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 
-// ── 关于图片优化的重要说明 ─────────────────────────────────────
-// 曾尝试用阿里 CDN 的 "_宽x高.jpg" 后缀做实时缩放（可把 297MB 压到 0.7MB），
-// 但实测该缩放服务【极不稳定】：同一个地址会时而返回 200、时而返回 404，
-// 导致页面上大量图片变成破图。原图地址则 100% 稳定（76/78 返回 200，
-// 仅 2 张早已失效的图返回 403）。
-//
-// 结论：本页一律直接使用原图地址，不做任何 CDN 缩放，确保图片必定显示。
-// 若日后要优化体积，应改用「本地压缩后放进 public/」的方案，不要依赖该 CDN 缩放。
+// ── 图片方案说明 ───────────────────────────────────────────────
+// 全部预览图已本地化到 public/graphics/<项目slug>/：
+//   01.jpg       全尺寸 JPEG（q88，灯箱点击时才加载）
+//   01.thumb.jpg 120px 缩略图（列表网格用，首屏总计 <1MB）
+// 历史教训：曾用阿里 CDN 的 "_宽x高.jpg" 缩放参数，该服务极不稳定
+// （同一地址时而 200 时而 404），已彻底弃用。新增图片时把原图
+// 转成 JPEG 放入对应目录即可，保持全名 + .thumb.jpg 成对。
+
+// 列表网格用小缩略图；非 /graphics/ 本地图（如遗留失效图）直接用原地址
+const thumbSrc = (src: string) =>
+	src.startsWith('/graphics/') ? src.replace(/\.jpg$/, '.thumb.jpg') : src;
 
 const graphicWorks = [
 	{
@@ -19,22 +22,22 @@ const graphicWorks = [
 				name: "季风服饰 - 旺铺装修", 
 				url: "https://monsoonclothing.en.alibaba.com/",
 				previews: [
-					{ title: "季风 PC", src: "https://sc01.alicdn.com/kf/A28088f0056e84b349e32ae633c9cd709P.jpg" },
-					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/A76b98cd77e9b42a5b47704a638f8baf5u.png" },
-					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/A8c8ed6f65ac54cca872f4797563582b3W.png" },
-					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/A21df62138f894463a55a1c006a7c9c80V.png" },
-					{ title: "BANNER 4", src: "https://sc01.alicdn.com/kf/A539636764e854fcd8289d167350f274dV.png" },
-					{ title: "BANNER 5", src: "https://sc01.alicdn.com/kf/A1325d1a4f4c54242be347090ce749eaff.png" }
+					{ title: "季风 PC", src: "/graphics/jifeng/01.jpg" },
+					{ title: "BANNER 1", src: "/graphics/jifeng/02.jpg" },
+					{ title: "BANNER 2", src: "/graphics/jifeng/03.jpg" },
+					{ title: "BANNER 3", src: "/graphics/jifeng/04.jpg" },
+					{ title: "BANNER 4", src: "/graphics/jifeng/05.jpg" },
+					{ title: "BANNER 5", src: "/graphics/jifeng/06.jpg" }
 				]
 			},
 			{ 
 				name: "宇梦锐 - 旺铺装修", 
 				url: "https://ymrlicenseplate.en.alibaba.com/",
 				previews: [
-					{ title: "宇梦锐 PC", src: "https://sc01.alicdn.com/kf/A246846bea7074d6ea036351b9688cedaa.png" },
-					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/A8e5ce0e04d214bfa9ead207ece1f8681d.png" },
-					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/A42515f41361f43b9a479e28760d7873a9.png" },
-					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/A1647f8d65ed747acbbf4f597038d1f47v.png" }
+					{ title: "宇梦锐 PC", src: "/graphics/yumengrui/01.jpg" },
+					{ title: "BANNER 1", src: "/graphics/yumengrui/02.jpg" },
+					{ title: "BANNER 2", src: "/graphics/yumengrui/03.jpg" },
+					{ title: "BANNER 3", src: "/graphics/yumengrui/04.jpg" }
 				]
 			},
 			{
@@ -57,10 +60,10 @@ const graphicWorks = [
 				name: "铭烨 - 旺铺装修", 
 				url: "https://dgmystyle.en.alibaba.com/",
 				previews: [
-					{ title: "铭烨 PC", src: "https://sc01.alicdn.com/kf/Ac4d032325af5428dab1f32bf8b50a92fn.png" },
-					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/A982289b826e1457ba8650248e3f3e687s.png" },
-					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/A755b055e1d814a628f0caee5d5514ea6T.png" },
-					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/A72ec3b9a9fe141cb8d365547c35655bch.png" }
+					{ title: "铭烨 PC", src: "/graphics/xinrui/01.jpg" },
+					{ title: "BANNER 1", src: "/graphics/xinrui/02.jpg" },
+					{ title: "BANNER 2", src: "/graphics/xinrui/03.jpg" },
+					{ title: "BANNER 3", src: "/graphics/xinrui/04.jpg" }
 				]
 			},
 			{ 
@@ -69,58 +72,58 @@ const graphicWorks = [
 				previews: [
 					{ title: "骄之阳新版主页", src: "https://sc01.alicdn.com/kf/A6c54956f2e264486a7ee501e6778157fu.png" },
 					{ title: "新版 BANNER 1", src: "https://sc01.alicdn.com/kf/Ae1c32f5a60694b828f81ebfb94c95f7aE.png" },
-					{ title: "新版 BANNER 2", src: "https://sc01.alicdn.com/kf/Aebbaebbf9cae4255a837d7b179434d09v.png" },
-					{ title: "新版 BANNER 3", src: "https://sc01.alicdn.com/kf/A4ee67a61b5a8405ca5b74d6685955fe4m.png" }
+					{ title: "新版 BANNER 2", src: "/graphics/jiaozhiyang/03.jpg" },
+					{ title: "新版 BANNER 3", src: "/graphics/jiaozhiyang/04.jpg" }
 				]
 			},
 			{ 
 				name: "鼎盛服饰 - 旺铺装修", 
 				url: "https://dsgarment.en.alibaba.com/",
 				previews: [
-					{ title: "鼎盛服饰主页", src: "https://sc01.alicdn.com/kf/A88cde901bb734c3f941dd1bcf870a4c6s.png" },
-					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/A1da4c520ddd14663ba0cd86664613f233.png" },
-					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/Afbb534eb625e424e9597d1ac7e517775m.png" },
-					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/Ade449165997241eaba40637575a5d6f5R.png" }
+					{ title: "鼎盛服饰主页", src: "/graphics/dingshengfs/01.jpg" },
+					{ title: "BANNER 1", src: "/graphics/dingshengfs/02.jpg" },
+					{ title: "BANNER 2", src: "/graphics/dingshengfs/03.jpg" },
+					{ title: "BANNER 3", src: "/graphics/dingshengfs/04.jpg" }
 				]
 			},
 			{ 
 				name: "博远鑫 - 旺铺装修", 
 				url: "https://boyuanxin.en.alibaba.com",
 				previews: [
-					{ title: "博远鑫 PC 设计", src: "https://sc01.alicdn.com/kf/A1fb1caaec16e4a17aa0adb43afc03e38G.png" },
-					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/Ae203e7e4384247f387ccf10526e401fax.png" },
-					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/Acf86da1ab02b422d8523e643642f0d6cY.png" },
-					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/A9a1503edbcf44aba814ced830a985350B.png" }
+					{ title: "博远鑫 PC 设计", src: "/graphics/boyuanxin/01.jpg" },
+					{ title: "BANNER 1", src: "/graphics/boyuanxin/02.jpg" },
+					{ title: "BANNER 2", src: "/graphics/boyuanxin/03.jpg" },
+					{ title: "BANNER 3", src: "/graphics/boyuanxin/04.jpg" }
 				]
 			},
 			{ 
 				name: "崇瑧 - 旺铺装修", 
 				url: "https://dgchonzhen.en.alibaba.com/",
 				previews: [
-					{ title: "崇瑧主页", src: "https://sc01.alicdn.com/kf/Af23ef84ccf5f4329ba056db80eaf082fu.jpg" },
-					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/A93e4db7f10d64de896e38f34c714e53d8.png" },
-					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/A5886b143490c4312868a28c46f90079dB.png" },
-					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/A2742756a09f4432f8595475632e45d6aW.png" }
+					{ title: "崇瑧主页", src: "/graphics/chongzhen/01.jpg" },
+					{ title: "BANNER 1", src: "/graphics/chongzhen/02.jpg" },
+					{ title: "BANNER 2", src: "/graphics/chongzhen/03.jpg" },
+					{ title: "BANNER 3", src: "/graphics/chongzhen/04.jpg" }
 				]
 			},
 			{ 
 				name: "乾海 - 旺铺装修", 
 				url: "https://qianhai888.en.alibaba.com/",
 				previews: [
-					{ title: "乾海主页", src: "https://sc01.alicdn.com/kf/A1b788a9e49834e9eb34b48e2d99f8d317.png" },
-					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/A2d69058d3cbb4effaac6fd9a0182f95ck.png" },
-					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/A8b642629bdda45c6ab7ec4a1bebeb8c71.png" },
-					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/A38ba5b7a5f4c4e7da4d86ef25e21fd1ae.png" }
+					{ title: "乾海主页", src: "/graphics/qianhai/01.jpg" },
+					{ title: "BANNER 1", src: "/graphics/qianhai/02.jpg" },
+					{ title: "BANNER 2", src: "/graphics/qianhai/03.jpg" },
+					{ title: "BANNER 3", src: "/graphics/qianhai/04.jpg" }
 				]
 			},
 			{ 
 				name: "禾森 - 旺铺装修", 
 				url: "https://cn1574936619azmx.en.alibaba.com/",
 				previews: [
-					{ title: "禾森主页", src: "https://sc01.alicdn.com/kf/A712a0abd62aa42b082f0a7ca7212b4c0G.png" },
-					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/A27336c764e4f416b8dd0bc470688d6f1V.png" },
-					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/A831da48fa8564843ba8ead7a0fddb463B.png" },
-					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/A6651a524938849a99c738604a685152d3.png" }
+					{ title: "禾森主页", src: "/graphics/hesen/01.jpg" },
+					{ title: "BANNER 1", src: "/graphics/hesen/02.jpg" },
+					{ title: "BANNER 2", src: "/graphics/hesen/03.jpg" },
+					{ title: "BANNER 3", src: "/graphics/hesen/04.jpg" }
 				]
 			}
 		]
@@ -132,50 +135,50 @@ const graphicWorks = [
 				name: "佳泰 - 旺铺装修", 
 				url: "https://meritascentltd.en.alibaba.com/",
 				previews: [
-					{ title: "佳泰主页", src: "https://sc01.alicdn.com/kf/A1ae9b5cad40a40fea93b637c2eda52b9P.jpg" },
-					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/Abab441931eeb4d8c9f16829ca7bc492cC.png" },
-					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/A57b6bf4c250b4cdc87db8a271e8946e3S.png" },
-					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/A2dfad29303e34235a1bde231effb7e73a.png" }
+					{ title: "佳泰主页", src: "/graphics/jiatai/01.jpg" },
+					{ title: "BANNER 1", src: "/graphics/jiatai/02.jpg" },
+					{ title: "BANNER 2", src: "/graphics/jiatai/03.jpg" },
+					{ title: "BANNER 3", src: "/graphics/jiatai/04.jpg" }
 				]
 			},
 			{ 
 				name: "擎洲 - 旺铺装修", 
 				url: "https://letaron-group.en.alibaba.com/",
 				previews: [
-					{ title: "擎洲主页", src: "https://sc01.alicdn.com/kf/A148ffdaccfd14330bcb750ed5eaa6753S.jpg" }
+					{ title: "擎洲主页", src: "/graphics/qingzhou/01.jpg" }
 				]
 			},
 			{ 
 				name: "博远 - 旺铺装修", 
 				url: "https://foshanboyuan.en.alibaba.com",
 				previews: [
-					{ title: "博远 主页", src: "https://sc01.alicdn.com/kf/A30139b63eaca49feb04515fba76b9b4fA.png" },
-					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/A482b999639704d4facf630864ca9168bG.png" },
-					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/Afb2e528f94224b688b250efd268d0d29x.png" },
-					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/A464b7f99e2044d78b9f8fda4c82141aed.png" }
+					{ title: "博远 主页", src: "/graphics/boyuan/01.jpg" },
+					{ title: "BANNER 1", src: "/graphics/boyuan/02.jpg" },
+					{ title: "BANNER 2", src: "/graphics/boyuan/03.jpg" },
+					{ title: "BANNER 3", src: "/graphics/boyuan/04.jpg" }
 				]
 			},
 			{ 
 				name: "英络 - 旺铺装修", 
 				url: "https://yingluo888.en.alibaba.com",
 				previews: [
-					{ title: "英络 主页", src: "https://sc01.alicdn.com/kf/A1e604ec9c400445280eca05f0d9491a1k.png" },
-					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/Ac3757c32fc4742ed99108f4677a11c5as.png" },
-					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/Abfd39ad0f4244c6ebc5bebc73c54b9a4Y.png" },
-					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/A8923eddc955c4c0e8182d8d372c8f115A.png" }
+					{ title: "英络 主页", src: "/graphics/yingluo/01.jpg" },
+					{ title: "BANNER 1", src: "/graphics/yingluo/02.jpg" },
+					{ title: "BANNER 2", src: "/graphics/yingluo/03.jpg" },
+					{ title: "BANNER 3", src: "/graphics/yingluo/04.jpg" }
 				]
 			},
 			{ 
 				name: "航程 - 旺铺装修", 
 				url: "https://dghangchenggarment.en.alibaba.com",
 				previews: [
-					{ title: "航程 主页", src: "https://sc01.alicdn.com/kf/Af66379ef98e84853825c06e53f6e84aaF.jpg" },
-					{ title: "详情页预览", src: "https://sc01.alicdn.com/kf/Ac04ce97d647144d693dcca4cbcfe0bd2E.jpg" },
-					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/A8a572399ecf14d1caa7910474d7778ddn.png" },
-					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/A4179098fa3004f2fac737b1935309a6fN.png" },
-					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/Ad3790b475b0f42bba8c492d23f069408z.png" },
-					{ title: "BANNER 4", src: "https://sc01.alicdn.com/kf/Aa76c5e06718d4f0c90193519931a92ddZ.png" },
-					{ title: "BANNER 5", src: "https://sc01.alicdn.com/kf/A0bb4747357c64f9285a9757aa973b52e4.png" }
+					{ title: "航程 主页", src: "/graphics/hangcheng/01.jpg" },
+					{ title: "详情页预览", src: "/graphics/hangcheng/02.jpg" },
+					{ title: "BANNER 1", src: "/graphics/hangcheng/03.jpg" },
+					{ title: "BANNER 2", src: "/graphics/hangcheng/04.jpg" },
+					{ title: "BANNER 3", src: "/graphics/hangcheng/05.jpg" },
+					{ title: "BANNER 4", src: "/graphics/hangcheng/06.jpg" },
+					{ title: "BANNER 5", src: "/graphics/hangcheng/07.jpg" }
 				]
 			}
 		]
@@ -187,50 +190,50 @@ const graphicWorks = [
 				name: "弘硕 - 旺铺装修", 
 				url: "https://cnhongshuofushi.en.alibaba.com/",
 				previews: [
-					{ title: "服饰主页", src: "https://sc01.alicdn.com/kf/A5dc44453be1745108ff8060f2558ea3bz.png" },
-					{ title: "BANNER 合集 1", src: "https://sc01.alicdn.com/kf/A6124302dfd034d17b1334fd6e6065bc2h.png" },
-					{ title: "BANNER 合集 2", src: "https://sc01.alicdn.com/kf/Abbfcf4c702d34465b3a18c53399a6cfbn.png" },
-					{ title: "BANNER 合集 3", src: "https://sc01.alicdn.com/kf/Aab60a0fd29e249c49f9f2baaff4503eff.png" }
+					{ title: "服饰主页", src: "/graphics/hongshuo/01.jpg" },
+					{ title: "BANNER 合集 1", src: "/graphics/hongshuo/02.jpg" },
+					{ title: "BANNER 合集 2", src: "/graphics/hongshuo/03.jpg" },
+					{ title: "BANNER 合集 3", src: "/graphics/hongshuo/04.jpg" }
 				]
 			},
 			{ 
 				name: "凡优卓 - 旺铺装修", 
 				url: "https://vansfashion.en.alibaba.com/",
 				previews: [
-					{ title: "凡优卓主页", src: "https://sc01.alicdn.com/kf/A3e9c18ff507e4fa09a8dbd2823863a7bT.png" },
-					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/A311b32a42b804824a29b6b391f854799i.png" },
-					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/A6d31891728f54c3fb44d518afb56d71dx.png" },
-					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/Aad184d96c3fb4401a61249da4f8b4d302.png" },
-					{ title: "BANNER 4", src: "https://sc01.alicdn.com/kf/A6cabb901ea664798b5a91836b2a6289ex.png" }
+					{ title: "凡优卓主页", src: "/graphics/fanyouzhuo/01.jpg" },
+					{ title: "BANNER 1", src: "/graphics/fanyouzhuo/02.jpg" },
+					{ title: "BANNER 2", src: "/graphics/fanyouzhuo/03.jpg" },
+					{ title: "BANNER 3", src: "/graphics/fanyouzhuo/04.jpg" },
+					{ title: "BANNER 4", src: "/graphics/fanyouzhuo/05.jpg" }
 				]
 			},
 			{ 
 				name: "允硕 - 旺铺装修", 
 				url: "https://yunshuo666.en.alibaba.com/",
 				previews: [
-					{ title: "允硕主页", src: "https://sc01.alicdn.com/kf/A16f1380009bc4932bd2f6a125f216061r.png" },
-					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/A44416c54d3ac482d86371efe394e0f70q.png" },
-					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/Afd54978059a248ca872f111dec091f1bl.png" },
-					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/A78375e4602c644bc93740800a3985d78C.png" }
+					{ title: "允硕主页", src: "/graphics/yunshuo/01.jpg" },
+					{ title: "BANNER 1", src: "/graphics/yunshuo/02.jpg" },
+					{ title: "BANNER 2", src: "/graphics/yunshuo/03.jpg" },
+					{ title: "BANNER 3", src: "/graphics/yunshuo/04.jpg" }
 				]
 			},
 			{ 
 				name: "尤佳 - 旺铺装修", 
 				url: "https://youjiamyy.en.alibaba.com/",
 				previews: [
-					{ title: "尤佳主页", src: "https://sc01.alicdn.com/kf/A412b585e84954ad6bd719e25bec7108ba.png" },
-					{ title: "BANNER 1", src: "https://sc01.alicdn.com/kf/A3e88af514bec44de9915728f0d128e8e8.png" },
-					{ title: "BANNER 2", src: "https://sc01.alicdn.com/kf/Ab018898824bf4ed5827d7d4f661643738.png" },
-					{ title: "BANNER 3", src: "https://sc01.alicdn.com/kf/Abe950cf00796413b8961f2f9b395e39c7.png" }
+					{ title: "尤佳主页", src: "/graphics/youjia/01.jpg" },
+					{ title: "BANNER 1", src: "/graphics/youjia/02.jpg" },
+					{ title: "BANNER 2", src: "/graphics/youjia/03.jpg" },
+					{ title: "BANNER 3", src: "/graphics/youjia/04.jpg" }
 				]
 			},
 			{ 
 				name: "鼎盛 - 旺铺装修", 
 				url: "https://dingshengdg.en.alibaba.com/",
 				previews: [
-					{ title: "主页轮播", src: "https://sc01.alicdn.com/kf/A7334df88a1bb4f7c87bee89f5935cbde6.jpg" },
-					{ title: "Banner图", src: "https://sc01.alicdn.com/kf/A1d41d33377dc4c179223fae18e9b909e9.png" },
-					{ title: "详情长图", src: "https://sc01.alicdn.com/kf/A1a5250c97fff418d8f61da5fe095f28a3.png" }
+					{ title: "主页轮播", src: "/graphics/dingsheng/01.jpg" },
+					{ title: "Banner图", src: "/graphics/dingsheng/02.jpg" },
+					{ title: "详情长图", src: "/graphics/dingsheng/03.jpg" }
 				]
 			}
 		]
@@ -276,7 +279,7 @@ const graphicWorks = [
 												data-link={work.url}
 											>
 												<img
-													src={img.src}
+													src={thumbSrc(img.src)}
 													alt={img.title}
 													width="48"
 													height="48"

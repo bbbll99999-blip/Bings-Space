@@ -22,10 +22,10 @@ const currentPath = Astro.url.pathname;
 		justify-content: space-between;
 		align-items: center;
 		padding: 1rem 2rem;
-		margin-top: 3rem; /* 给趴在导航条上的小蓝留出探头空间（与 sticky top 保持一致，避免跳动） */
+		margin-top: 6rem; /* 给趴在导航条上的小蓝留出完整探头空间（形象高 86px，6rem=96px 保证页面顶部与吸顶时都不裁切） */
 		margin-bottom: 2rem;
 		position: sticky;
-		top: 5rem;
+		top: 6rem;
 		z-index: 100;
 	}
 

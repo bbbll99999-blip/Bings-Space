@@ -1,93 +1,110 @@
 ---
-// 导航条装饰：AI 生成的 Q 版蓝毛女孩（5 帧视线），趴在导航条上
-// 交互：根据鼠标方位切换视线帧（中/左上/右上/左下/右下）+ 整体轻微视差移动
+// 导航条装饰：Q 版蓝毛女孩（慌张流汗表情），趴在导航条上
+// 架构：一张静态身体图 + 一层"只有眼睛"的图（9 个方向帧）
+// 视线跟随 = 眼层帧切换（交叉淡化）+ 眼层连续微移，身体不动
 // pointer-events:none 不挡点击；<900px 隐藏；prefers-reduced-motion 静止
+const eyeDirs = ['c', 'lu', 'u', 'ru', 'l', 'r', 'ld', 'd', 'rd'];
 ---
 
 <div class="nav-cat" id="navCat" aria-hidden="true">
-	<img class="cat-frame" src="/images/navcat/center.png" data-dir="c" alt="" decoding="async" draggable="false" />
-	<img class="cat-frame" src="/images/navcat/lu.png" data-dir="lu" alt="" loading="lazy" decoding="async" draggable="false" />
-	<img class="cat-frame" src="/images/navcat/ru.png" data-dir="ru" alt="" loading="lazy" decoding="async" draggable="false" />
-	<img class="cat-frame" src="/images/navcat/ld.png" data-dir="ld" alt="" loading="lazy" decoding="async" draggable="false" />
-	<img class="cat-frame" src="/images/navcat/rd.png" data-dir="rd" alt="" loading="lazy" decoding="async" draggable="false" />
+	<img class="cat-body" src="/images/navcat/body.png" alt="" decoding="async" draggable="false" />
+	<div class="cat-eyes" id="catEyes">
+		{eyeDirs.map((d) => (
+			<img class="eye-frame" src={`/images/navcat/eyes_${d}.png`} data-dir={d} alt="" decoding="async" draggable="false" />
+		))}
+	</div>
 </div>
 
 <style>
 	.nav-cat {
 		position: absolute;
-		top: -84px;
+		top: -86px;
 		right: 4%;
 		width: 96px;
-		height: 84px;
+		height: 86px;
 		pointer-events: none;
 		user-select: none;
 	}
-	/* 5 帧叠放，视线帧切换 = 透明度切换（全部预加载，无闪烁） */
-	.cat-frame {
+	.cat-body {
 		position: absolute;
 		left: 0;
 		bottom: 0;
 		width: 100%;
 		height: auto;
-		opacity: 0;
-		transition: opacity 0.18s ease;
 	}
-	.cat-frame[data-dir='c'] { opacity: 1; }
-	.nav-cat.moving .cat-frame { will-change: opacity, transform; }
+	/* 眼层：与身体对齐（百分比定位自素材处理脚本输出） */
+	.cat-eyes {
+		position: absolute;
+		left: 21.36%;
+		top: 58.35%;
+		width: 55.68%;
+		height: 25.95%;
+	}
+	/* 9 帧眼图叠放，切换 = 透明度交叉淡化（全部立即加载，无闪烁） */
+	.eye-frame {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+		transition: opacity 0.12s linear;
+		will-change: opacity;
+	}
+	.eye-frame[data-dir='c'] { opacity: 1; }
 
 	@media (max-width: 900px) {
 		.nav-cat { display: none; }
-	}
-	@media (prefers-reduced-motion: reduce) {
-		.nav-cat { transform: none !important; }
 	}
 </style>
 
 <script is:inline>
 	(() => {
 		const cat = document.getElementById('navCat');
-		if (!cat) return;
-		const frames = cat.querySelectorAll('.cat-frame');
-		const byDir = {};
-		frames.forEach((f) => (byDir[f.dataset.dir] = f));
+		const eyes = document.getElementById('catEyes');
+		if (!cat || !eyes) return;
+		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+		const frames = {};
+		eyes.querySelectorAll('.eye-frame').forEach((f) => (frames[f.dataset.dir] = f));
+
+		let tx = 0, ty = 0;   // 目标视线向量（-1..1）
+		let vx = 0, vy = 0;   // 缓动后的当前视线向量
 		let curDir = 'c';
-		let tx = 0, ty = 0, cx = 0, cy = 0;
 		let rafId = null;
+
+		// 角度 → 8 方向帧名
+		const dirOf = (x, y) => {
+			const a = Math.atan2(-y, x) * 180 / Math.PI; // 屏幕坐标 y 向下，取反成数学角
+			const names = ['r', 'ru', 'u', 'lu', 'l', 'ld', 'd', 'rd'];
+			return names[Math.round(((a + 360) % 360) / 45) % 8];
+		};
 
 		const onMove = (e) => {
 			const rect = cat.getBoundingClientRect();
-			const dx = (e.clientX - (rect.left + rect.width / 2)) / window.innerWidth;
-			const dy = (e.clientY - (rect.top + rect.height / 2)) / window.innerHeight;
-			const nx = Math.max(-1, Math.min(1, dx * 2.5));
-			const ny = Math.max(-1, Math.min(1, dy * 2.5));
-
-			// 视线方向：死区内看前方，超出后按象限选帧
-			let dir = 'c';
-			if (Math.abs(nx) > 0.18 || Math.abs(ny) > 0.18) {
-				dir = (ny < 0 ? 'u' : 'd') === 'u'
-					? (nx < 0 ? 'lu' : 'ru')
-					: (nx < 0 ? 'ld' : 'rd');
-				// 水平接近中线时优先表达上下，垂直接近中线时优先表达左右
-				if (Math.abs(nx) < 0.12) dir = ny < 0 ? 'lu' : 'ld';
-				if (Math.abs(ny) < 0.12) dir = nx < 0 ? 'lu' : 'ru';
-			}
-			if (dir !== curDir) {
-				byDir[curDir].style.opacity = '0';
-				byDir[dir].style.opacity = '1';
-				curDir = dir;
-			}
-
-			// 整体轻微视差（幅度小，手部扒边不被破坏）
-			tx = nx * 3; ty = ny * 2;
-			if (rafId === null) tick();
+			const nx = (e.clientX - (rect.left + rect.width / 2)) / window.innerWidth;
+			const ny = (e.clientY - (rect.top + rect.height / 2)) / window.innerHeight;
+			tx = Math.max(-1, Math.min(1, nx * 2.2));
+			ty = Math.max(-1, Math.min(1, ny * 2.2));
+			if (rafId === null) rafId = requestAnimationFrame(tick);
 		};
 
 		const tick = () => {
-			cx += (tx - cx) * 0.12;
-			cy += (ty - cy) * 0.12;
-			cat.style.transform = `translate(${cx.toFixed(2)}px, ${cy.toFixed(2)}px)`;
-			if (Math.abs(tx - cx) > 0.05 || Math.abs(ty - cy) > 0.05) {
+			vx += (tx - vx) * 0.14;
+			vy += (ty - vy) * 0.14;
+
+			// 眼层连续微移（亚帧级平滑）
+			eyes.style.transform = `translate(${(vx * 2).toFixed(2)}px, ${(vy * 1.6).toFixed(2)}px)`;
+
+			// 帧选择：死区内看前方，按角度选 8 方向
+			let dir = 'c';
+			if (Math.hypot(vx, vy) > 0.15) dir = dirOf(vx, vy);
+			if (dir !== curDir) {
+				frames[curDir].style.opacity = '0';
+				frames[dir].style.opacity = '1';
+				curDir = dir;
+			}
+
+			if (Math.abs(tx - vx) > 0.01 || Math.abs(ty - vy) > 0.01) {
 				rafId = requestAnimationFrame(tick);
 			} else {
 				rafId = null;

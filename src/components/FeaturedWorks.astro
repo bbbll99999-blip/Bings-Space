@@ -1,0 +1,124 @@
+---
+import graphicWorks from '../data/graphics.js';
+
+// 最新 4 个项目（graphicWorks 时段最新在上，摊平后取前 4）
+const latest = graphicWorks.flatMap(g => g.works.map(w => ({ ...w, time: g.time }))).slice(0, 4);
+
+// 自动统计：项目数 / 设计稿数 / 时间跨度
+const totalWorks = graphicWorks.reduce((n, g) => n + g.works.length, 0);
+const totalPreviews = graphicWorks.reduce((n, g) => n + g.works.reduce((m, w) => m + w.previews.length, 0), 0);
+const newest = (graphicWorks[0]?.time ?? '').replace(/-\d+月/, '');
+const oldest = (graphicWorks[graphicWorks.length - 1]?.time ?? '').replace(/-\d+月/, '');
+
+// 列表用 120px 缩略图；卡片图取每个项目第一张预览（PC 主页在数组末位，首图即 BANNER）
+const thumbSrc = (src) => src.startsWith('/graphics/') ? src.replace(/\.jpg$/, '.thumb.jpg') : src;
+---
+
+<section class="featured-section">
+	<div class="section-header">
+		<div>
+			<h2>平面作品</h2>
+			<p class="subtitle">近期旺铺装修精选</p>
+		</div>
+		<a href="/graphics" class="view-all">查看全部 →</a>
+	</div>
+
+	<p class="stats-line">
+		{newest} 至 {oldest} · {totalWorks} 个店铺项目 · {totalPreviews} 张设计稿 · 仅展示个人能力，版权归公司与品牌方所有
+	</p>
+
+	<div class="works-row">
+		{latest.map((w) => (
+			<a href="/graphics" class="work-card" aria-label={`查看 ${w.name}`}>
+				<div class="card-img">
+					<img src={thumbSrc(w.previews[0].src)} alt={w.name} loading="lazy" decoding="async" />
+				</div>
+				<div class="card-info">
+					<span class="name">{w.name.replace(' - 旺铺装修', '')}</span>
+					<span class="time">{w.time}</span>
+				</div>
+			</a>
+		))}
+	</div>
+</section>
+
+<style>
+	.featured-section { width: 100%; padding: 0 1rem; }
+	.section-header {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		margin-bottom: 1.25rem;
+	}
+	h2 {
+		font-size: 2.4rem;
+		font-weight: 800;
+		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin: 0 0 0.5rem;
+		display: inline-block;
+	}
+	.subtitle { color: #94a3b8; font-size: 1.1rem; margin: 0; }
+	.view-all {
+		color: #2563eb;
+		font-size: 1rem;
+		font-weight: 600;
+		text-decoration: none;
+		padding-bottom: 0.35rem;
+	}
+	.view-all:hover { text-decoration: underline; }
+
+	.stats-line {
+		color: #94a3b8;
+		font-size: 0.95rem;
+		letter-spacing: 0.5px;
+		margin: 0 0 1.75rem;
+		padding-bottom: 1.25rem;
+		border-bottom: 2px solid #f8fafc;
+	}
+
+	.works-row {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 1.5rem;
+	}
+	.work-card {
+		display: block;
+		text-decoration: none;
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 14px;
+		overflow: hidden;
+		transition: transform 0.25s ease, box-shadow 0.25s ease;
+	}
+	.work-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 12px 28px rgba(37, 99, 235, 0.12);
+	}
+	.card-img {
+		aspect-ratio: 16 / 9;
+		overflow: hidden;
+		background: #f0f9ff;
+	}
+	.card-img img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+	.card-info {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.5rem;
+		padding: 0.9rem 1.1rem;
+	}
+	.name { font-size: 1.02rem; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+	.time { font-size: 0.82rem; color: #94a3b8; white-space: nowrap; }
+
+	/* 移动端：4 列 → 2 列 → 1 列 */
+	@media (max-width: 1000px) { .works-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+	@media (max-width: 560px) { .works-row { grid-template-columns: 1fr; } .section-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; } }
+</style>

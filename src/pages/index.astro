@@ -5,6 +5,7 @@ import PersonalInfo from '../components/PersonalInfo.astro';
 import Calendar from '../components/Calendar.astro';
 import SocialLinks from '../components/SocialLinks.astro';
 import LatestArticles from '../components/LatestArticles.astro';
+import FeaturedWorks from '../components/FeaturedWorks.astro';
 ---
 
 <Layout title="首页 - Bing's Space">
@@ -21,6 +22,8 @@ import LatestArticles from '../components/LatestArticles.astro';
 		<div class="section-divider"></div>
 
 		<main class="main-content">
+			<FeaturedWorks />
+			<div class="section-divider inner-divider"></div>
 			<LatestArticles />
 		</main>
 	</div>
@@ -78,6 +81,14 @@ import LatestArticles from '../components/LatestArticles.astro';
 	.main-content {
 		width: 100%;
 		/* 这里不再需要 border-top，因为上面有了 section-divider */
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+
+	/* 内容区内部分割线（作品精选与日志之间），比顶部主分割线轻一些 */
+	.section-divider.inner-divider {
+		margin: 4.5rem 0 4.5rem;
 	}
 
 	@media (max-width: 1200px) {

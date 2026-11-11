@@ -1,137 +1,97 @@
 ---
-// 导航条装饰：Q版蓝毛女孩（小蓝）趴在导航条上
-// 纯 SVG 绘制：眼珠是独立图层，可真实跟随鼠标（在眼眶范围内移动），头部整体轻移辅助
+// 导航条装饰：AI 生成的 Q 版蓝毛女孩（5 帧视线），趴在导航条上
+// 交互：根据鼠标方位切换视线帧（中/左上/右上/左下/右下）+ 整体轻微视差移动
 // pointer-events:none 不挡点击；<900px 隐藏；prefers-reduced-motion 静止
 ---
 
 <div class="nav-cat" id="navCat" aria-hidden="true">
-	<svg id="navCatSvg" viewBox="0 0 220 132" xmlns="http://www.w3.org/2000/svg">
-		<defs>
-			<radialGradient id="irisGrad" cx="0.35" cy="0.3" r="1">
-				<stop offset="0%" stop-color="#5C93E8"></stop>
-				<stop offset="45%" stop-color="#2E5FB8"></stop>
-				<stop offset="100%" stop-color="#173F8C"></stop>
-			</radialGradient>
-			<linearGradient id="hairGrad" x1="0" y1="0" x2="0" y2="1">
-				<stop offset="0%" stop-color="#6FA9F2"></stop>
-				<stop offset="100%" stop-color="#5189DC"></stop>
-			</linearGradient>
-		</defs>
-
-		<g id="catHead">
-			<path fill="url(#hairGrad)" d="M16,132 L16,74 Q16,28 60,15 Q110,-4 160,15 Q204,28 204,74 L204,132 L178,132 Q182,92 174,72 Q150,82 128,76 L108,80 Q78,86 50,78 Q38,94 42,132 Z"></path>
-			<ellipse cx="110" cy="84" rx="53" ry="46" fill="#FDF3E7"></ellipse>
-			<path fill="url(#hairGrad)" d="M22,82 Q20,32 62,18 Q110,2 158,18 Q200,32 198,82 Q186,88 176,80 Q170,66 158,74 Q150,84 138,78 Q126,70 114,78 Q104,86 92,78 Q80,70 70,78 Q60,86 48,80 Q40,74 32,80 Q27,84 22,82 Z"></path>
-			<path fill="#4A7FD6" opacity="0.55" d="M92,78 Q96,64 104,74 Q98,80 92,78 Z"></path>
-			<path fill="#4A7FD6" opacity="0.55" d="M126,76 Q132,62 140,72 Q132,78 126,76 Z"></path>
-			<path fill="#6FA9F2" d="M104,20 Q92,-14 120,-6 Q142,2 130,18 Q126,8 114,12 Q110,16 104,20 Z"></path>
-			<path d="M50,44 Q80,24 118,26" stroke="#8FBDF7" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.7"></path>
-
-			<g>
-				<ellipse cx="85" cy="85" rx="14.5" ry="16.5" fill="#FFFFFF"></ellipse>
-				<g class="iris">
-					<circle cx="85" cy="86" r="11.5" fill="url(#irisGrad)"></circle>
-					<circle cx="85" cy="87" r="5.5" fill="#10265C"></circle>
-					<circle cx="81" cy="80" r="3.8" fill="#FFFFFF"></circle>
-					<circle cx="89.5" cy="91" r="1.9" fill="#FFFFFF" opacity="0.85"></circle>
-				</g>
-				<path d="M71,80 Q85,68 99,80" stroke="#26262B" stroke-width="3.5" stroke-linecap="round" fill="none"></path>
-			</g>
-			<g>
-				<ellipse cx="135" cy="85" rx="14.5" ry="16.5" fill="#FFFFFF"></ellipse>
-				<g class="iris">
-					<circle cx="135" cy="86" r="11.5" fill="url(#irisGrad)"></circle>
-					<circle cx="135" cy="87" r="5.5" fill="#10265C"></circle>
-					<circle cx="131" cy="80" r="3.8" fill="#FFFFFF"></circle>
-					<circle cx="139.5" cy="91" r="1.9" fill="#FFFFFF" opacity="0.85"></circle>
-				</g>
-				<path d="M121,80 Q135,68 149,80" stroke="#26262B" stroke-width="3.5" stroke-linecap="round" fill="none"></path>
-			</g>
-
-			<ellipse cx="63" cy="103" rx="10" ry="5" fill="#F8C8D0" opacity="0.8"></ellipse>
-			<ellipse cx="157" cy="103" rx="10" ry="5" fill="#F8C8D0" opacity="0.8"></ellipse>
-			<path d="M101,108 Q104,112 107,108 M109,108 Q112,112 115,108" stroke="#C96A6A" stroke-width="2.4" stroke-linecap="round" fill="none"></path>
-		</g>
-
-		<!-- 手：扒边，静止 -->
-		<g>
-			<ellipse cx="57" cy="126" rx="14" ry="13" fill="#FDF3E7"></ellipse>
-			<ellipse cx="163" cy="126" rx="14" ry="13" fill="#FDF3E7"></ellipse>
-			<path d="M52,116 L52,126 M62,115 L62,126" stroke="#E8D5BC" stroke-width="2" stroke-linecap="round"></path>
-			<path d="M158,116 L158,126 M168,115 L168,126" stroke="#E8D5BC" stroke-width="2" stroke-linecap="round"></path>
-		</g>
-
-		<!-- 头顶颜文字 -->
-		<g fill="#1E293B" transform="translate(193,14)">
-			<circle cx="0" cy="0" r="3.6"></circle>
-			<circle cx="21" cy="7" r="3.6"></circle>
-			<path d="M6,4 Q12,-1 15,4" stroke="#1E293B" stroke-width="3" fill="none" stroke-linecap="round"></path>
-		</g>
-	</svg>
+	<img class="cat-frame" src="/images/navcat/center.png" data-dir="c" alt="" decoding="async" draggable="false" />
+	<img class="cat-frame" src="/images/navcat/lu.png" data-dir="lu" alt="" loading="lazy" decoding="async" draggable="false" />
+	<img class="cat-frame" src="/images/navcat/ru.png" data-dir="ru" alt="" loading="lazy" decoding="async" draggable="false" />
+	<img class="cat-frame" src="/images/navcat/ld.png" data-dir="ld" alt="" loading="lazy" decoding="async" draggable="false" />
+	<img class="cat-frame" src="/images/navcat/rd.png" data-dir="rd" alt="" loading="lazy" decoding="async" draggable="false" />
 </div>
 
 <style>
 	.nav-cat {
 		position: absolute;
-		top: -76px;
-		right: 5%;
-		width: 128px;
-		height: 76px;
-		overflow: hidden; /* 底边裁切线 = 导航条上边缘，手"扒"在边线上 */
+		top: -84px;
+		right: 4%;
+		width: 96px;
+		height: 84px;
 		pointer-events: none;
 		user-select: none;
 	}
-	.nav-cat svg {
-		display: block;
+	/* 5 帧叠放，视线帧切换 = 透明度切换（全部预加载，无闪烁） */
+	.cat-frame {
+		position: absolute;
+		left: 0;
+		bottom: 0;
 		width: 100%;
 		height: auto;
-		will-change: transform;
+		opacity: 0;
+		transition: opacity 0.18s ease;
 	}
-	.nav-cat :global(.iris) { will-change: transform; }
+	.cat-frame[data-dir='c'] { opacity: 1; }
+	.nav-cat.moving .cat-frame { will-change: opacity, transform; }
 
 	@media (max-width: 900px) {
 		.nav-cat { display: none; }
 	}
 	@media (prefers-reduced-motion: reduce) {
-		.nav-cat :global(#catHead), .nav-cat :global(.iris) { transform: none !important; }
+		.nav-cat { transform: none !important; }
 	}
 </style>
 
 <script is:inline>
 	(() => {
 		const cat = document.getElementById('navCat');
-		const head = document.getElementById('catHead');
-		const irises = cat ? cat.querySelectorAll('.iris') : [];
-		if (!cat || !head || !irises.length) return;
+		if (!cat) return;
+		const frames = cat.querySelectorAll('.cat-frame');
+		const byDir = {};
+		frames.forEach((f) => (byDir[f.dataset.dir] = f));
 
-		let tx = 0, ty = 0, hx = 0, hy = 0, hr = 0;  // 目标值
-		let cx = 0, cy = 0, chx = 0, chy = 0, chr = 0; // 当前值（缓动）
+		let curDir = 'c';
+		let tx = 0, ty = 0, cx = 0, cy = 0;
 		let rafId = null;
 
 		const onMove = (e) => {
 			const rect = cat.getBoundingClientRect();
 			const dx = (e.clientX - (rect.left + rect.width / 2)) / window.innerWidth;
 			const dy = (e.clientY - (rect.top + rect.height / 2)) / window.innerHeight;
-			const nx = Math.max(-1, Math.min(1, dx * 2.2));
-			const ny = Math.max(-1, Math.min(1, dy * 2.2));
-			// 眼珠：在眼眶内移动
-			tx = nx * 4.5; ty = ny * 3.5;
-			// 头部：轻移 + 微倾
-			hx = nx * 6; hy = ny * 3.5; hr = nx * 2.5;
+			const nx = Math.max(-1, Math.min(1, dx * 2.5));
+			const ny = Math.max(-1, Math.min(1, dy * 2.5));
+
+			// 视线方向：死区内看前方，超出后按象限选帧
+			let dir = 'c';
+			if (Math.abs(nx) > 0.18 || Math.abs(ny) > 0.18) {
+				dir = (ny < 0 ? 'u' : 'd') === 'u'
+					? (nx < 0 ? 'lu' : 'ru')
+					: (nx < 0 ? 'ld' : 'rd');
+				// 水平接近中线时优先表达上下，垂直接近中线时优先表达左右
+				if (Math.abs(nx) < 0.12) dir = ny < 0 ? 'lu' : 'ld';
+				if (Math.abs(ny) < 0.12) dir = nx < 0 ? 'lu' : 'ru';
+			}
+			if (dir !== curDir) {
+				byDir[curDir].style.opacity = '0';
+				byDir[dir].style.opacity = '1';
+				curDir = dir;
+			}
+
+			// 整体轻微视差（幅度小，手部扒边不被破坏）
+			tx = nx * 3; ty = ny * 2;
 			if (rafId === null) tick();
 		};
 
 		const tick = () => {
-			cx += (tx - cx) * 0.15; cy += (ty - cy) * 0.15;
-			chx += (hx - chx) * 0.1; chy += (hy - chy) * 0.1; chr += (hr - chr) * 0.1;
-			irises.forEach((g) => {
-				g.setAttribute('transform', `translate(${cx.toFixed(2)}, ${cy.toFixed(2)})`);
-			});
-			head.setAttribute('transform', `translate(${chx.toFixed(2)}, ${chy.toFixed(2)}) rotate(${chr.toFixed(2)} 110 120)`);
-			const done =
-				Math.abs(tx - cx) < 0.02 && Math.abs(ty - cy) < 0.02 &&
-				Math.abs(hx - chx) < 0.02 && Math.abs(hy - chy) < 0.02 && Math.abs(hr - chr) < 0.02;
-			rafId = done ? null : requestAnimationFrame(tick);
+			cx += (tx - cx) * 0.12;
+			cy += (ty - cy) * 0.12;
+			cat.style.transform = `translate(${cx.toFixed(2)}px, ${cy.toFixed(2)}px)`;
+			if (Math.abs(tx - cx) > 0.05 || Math.abs(ty - cy) > 0.05) {
+				rafId = requestAnimationFrame(tick);
+			} else {
+				rafId = null;
+			}
 		};
 
 		document.addEventListener('mousemove', onMove, { passive: true });

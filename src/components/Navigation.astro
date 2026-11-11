@@ -1,8 +1,11 @@
 ---
+import NavCat from './NavCat.astro';
+
 const currentPath = Astro.url.pathname;
 ---
 
 <nav class="navigation glass-card">
+	<NavCat />
 	<a href="/" class="logo">Bing's Space</a>
 	<div class="nav-links">
 		<a href="/" class={currentPath === '/' ? 'active' : ''}>首页</a>
@@ -19,9 +22,10 @@ const currentPath = Astro.url.pathname;
 		justify-content: space-between;
 		align-items: center;
 		padding: 1rem 2rem;
+		margin-top: 3rem; /* 给趴在导航条上的小蓝留出探头空间（与 sticky top 保持一致，避免跳动） */
 		margin-bottom: 2rem;
 		position: sticky;
-		top: 1rem;
+		top: 5rem;
 		z-index: 100;
 	}
 

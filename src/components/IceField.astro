@@ -216,8 +216,8 @@
 				if (f.x < -20) f.x = W + 15;
 				if (f.x > W + 20) f.x = -15;
 
-				// 闪烁透明度（整体提亮）
-				const alpha = 0.5 + 0.45 * (0.5 + 0.5 * Math.sin(f.tw * 2.4 + f.phase));
+				// 闪烁透明度（整体比默认调低 10%）
+				const alpha = Math.max(0.1, 0.5 + 0.45 * (0.5 + 0.5 * Math.sin(f.tw * 2.4 + f.phase)) - 0.1);
 				drawFlake(f, alpha);
 			}
 			rafId = requestAnimationFrame(tick);

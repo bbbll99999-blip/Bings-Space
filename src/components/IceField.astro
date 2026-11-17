@@ -65,6 +65,8 @@
 				tw: rand(0.5, 1),                         // 闪烁相位
 				tint: TINTS[(Math.random() * TINTS.length) | 0],
 				style,                                    // 样式
+				// 碰撞半径：按样式的视觉覆盖范围估算
+				cr: style === 'dot' ? 0 : (big ? rand(4.2, 6.4) * 1.9 : rand(1.8, 3.8) * 1.9),
 				dx: 0, dy: 0                              // 扰动位移（衰减）
 			};
 		};
@@ -199,6 +201,27 @@
 				// 闪烁透明度（整体比默认调低 10%）
 				const alpha = Math.max(0.1, 0.5 + 0.45 * (0.5 + 0.5 * Math.sin(f.tw * 2.4 + f.phase)) - 0.1);
 				drawFlake(f, alpha);
+			}
+
+			// 碰撞分离：雪花两两软性推开，避免重叠（雪点 cr=0 不参与，自然小雪可叠）
+			for (let i = 0; i < flakes.length; i++) {
+				const a = flakes[i];
+				if (!a.cr) continue;
+				for (let j = i + 1; j < flakes.length; j++) {
+					const b = flakes[j];
+					if (!b.cr) continue;
+					const dx = (b.x + b.dx) - (a.x + a.dx);
+					const dy = (b.y + b.dy) - (a.y + a.dy);
+					const min = a.cr + b.cr;
+					const d2 = dx * dx + dy * dy;
+					if (d2 > 0.001 && d2 < min * min) {
+						const d = Math.sqrt(d2);
+						const push = (min - d) * 0.4; // 软性分离，防抖动
+						const nx = dx / d, ny = dy / d;
+						a.x -= nx * push; a.y -= ny * push;
+						b.x += nx * push; b.y += ny * push;
+					}
+				}
 			}
 			rafId = requestAnimationFrame(tick);
 		};

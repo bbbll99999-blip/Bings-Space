@@ -530,6 +530,22 @@ import graphicWorks from '../data/graphics.js';
 		text-decoration: none;
 		border-radius: 50px;
 		font-weight: 600;
+		transition: box-shadow 0.3s ease, background 0.3s ease;
+	}
+
+	/* T2 按钮结霜：悬停时边缘泛冰霜光 + 凝出细碎霜点 */
+	.btn-visit:hover {
+		background: #60a5fa;
+		box-shadow:
+			0 0 0 1.5px rgba(224, 242, 254, 0.9),
+			0 0 20px rgba(125, 211, 252, 0.65),
+			inset 0 1px 0 rgba(255, 255, 255, 0.85),
+			inset 0 0 12px rgba(224, 242, 254, 0.4);
+		background-image:
+			radial-gradient(circle at 22% 30%, rgba(255, 255, 255, 0.9) 0 1.3px, transparent 2.3px),
+			radial-gradient(circle at 68% 22%, rgba(255, 255, 255, 0.85) 0 1.1px, transparent 2px),
+			radial-gradient(circle at 45% 75%, rgba(255, 255, 255, 0.8) 0 1.2px, transparent 2.1px),
+			radial-gradient(circle at 82% 65%, rgba(255, 255, 255, 0.75) 0 1px, transparent 1.9px);
 	}
 
 	.close-btn {

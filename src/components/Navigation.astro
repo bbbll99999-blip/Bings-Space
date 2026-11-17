@@ -69,6 +69,14 @@ const currentPath = Astro.url.pathname;
 		width: 100%;
 	}
 
+	/* T2 结霜：悬停时链接文字泛起冰晶微光 */
+	.nav-links a:hover {
+		color: #0ea5e9;
+		text-shadow:
+			0 0 8px rgba(186, 230, 253, 0.9),
+			0 0 14px rgba(125, 211, 252, 0.5);
+	}
+
 	.nav-links a.active {
 		color: #2563eb;
 	}

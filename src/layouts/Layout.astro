@@ -7,6 +7,7 @@ interface Props {
 const { title = "Bing's Space - 冰冰蓝的小角落", description = '冰冰蓝的个人主页，记录音乐作品、平面设计、绘画创作与日志。' } = Astro.props;
 import IceField from '../components/IceField.astro';
 import IceBurst from '../components/IceBurst.astro';
+import IceFrost from '../components/IceFrost.astro';
 ---
 
 <!doctype html>
@@ -30,6 +31,7 @@ import IceBurst from '../components/IceBurst.astro';
 			<div class="shape shape-3"></div>
 		</div>
 		<IceField />
+		<IceFrost />
 		<IceBurst />
 		<slot />
 	</body>

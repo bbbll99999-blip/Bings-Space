@@ -1,0 +1,74 @@
+---
+// B3 霜花角落：静态 SVG 冰晶簇，从右上/左下两个对角向页面内辐射
+// z-index -1 在背景层（透过磨砂玻璃卡朦胧可见），pointer-events none
+const crystal = (len: number, tw: number) =>
+	`M0 0 L${len} 0 ` +
+	`M${len * 0.5} 0 L${len * 0.5 + tw} ${-tw * 1.1} M${len * 0.5} 0 L${len * 0.5 + tw} ${tw * 1.1} ` +
+	`M${len * 0.78} 0 L${len * 0.78 + tw * 0.8} ${-tw * 0.85} M${len * 0.78} 0 L${len * 0.78 + tw * 0.8} ${tw * 0.85}`;
+// 一簇 = 3 枝不同角度/长度的结晶 + 几粒冰点（相对主枝角度的偏移）
+const bloom = [
+	{ rot: 0, s: 1, o: 0.7 },
+	{ rot: 30, s: 0.72, o: 0.55 },
+	{ rot: 60, s: 0.5, o: 0.45 },
+];
+const dots = [
+	{ x: 180, y: 88, r: 2.2 }, { x: 120, y: 150, r: 1.7 }, { x: 240, y: 52, r: 1.5 },
+	{ x: 76, y: 205, r: 1.9 }, { x: 280, y: 30, r: 1.3 },
+];
+---
+
+<svg class="frost frost-tr" viewBox="0 0 400 400" aria-hidden="true">
+	{bloom.map((b) => (
+		<path
+			d={crystal(190 * b.s, 20 * b.s)}
+			transform={`translate(400 0) rotate(${100 + b.rot}) scale(${b.s})`}
+			fill="none"
+			stroke="#38bdf8"
+			stroke-width={1.8}
+			stroke-linecap="round"
+			opacity={b.o}
+		/>
+	))}
+	{dots.map((d) => (
+		<circle cx={400 - d.x} cy={d.y} r={d.r} fill="#38bdf8" opacity="0.45" />
+	))}
+</svg>
+
+<svg class="frost frost-bl" viewBox="0 0 400 400" aria-hidden="true">
+	{bloom.map((b) => (
+		<path
+			d={crystal(210 * b.s, 22 * b.s)}
+			transform={`translate(0 400) rotate(${-80 + b.rot}) scale(${b.s})`}
+			fill="none"
+			stroke="#38bdf8"
+			stroke-width={2.6}
+			stroke-linecap="round"
+			opacity={b.o}
+		/>
+	))}
+	{dots.map((d) => (
+		<circle cx={d.x} cy={400 - d.y} r={d.r} fill="#38bdf8" opacity="0.45" />
+	))}
+</svg>
+
+<style>
+	.frost {
+		position: fixed;
+		width: 400px;
+		height: 400px;
+		z-index: -1;
+		pointer-events: none;
+		opacity: 0.26;
+	}
+	.frost-tr {
+		top: -55px;
+		right: -55px;
+	}
+	.frost-bl {
+		bottom: -55px;
+		left: -55px;
+	}
+	@media (max-width: 900px) {
+		.frost { display: none; }
+	}
+</style>

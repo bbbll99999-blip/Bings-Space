@@ -20,11 +20,11 @@ const dots = [
 <svg class="frost frost-tr" viewBox="0 0 400 400" aria-hidden="true">
 	{bloom.map((b) => (
 		<path
-			d={crystal(190 * b.s, 20 * b.s)}
+			d={crystal(230 * b.s, 24 * b.s)}
 			transform={`translate(400 0) rotate(${100 + b.rot}) scale(${b.s})`}
 			fill="none"
 			stroke="#38bdf8"
-			stroke-width={1.8}
+			stroke-width={2.2}
 			stroke-linecap="round"
 			opacity={b.o}
 		/>
@@ -56,17 +56,17 @@ const dots = [
 		position: fixed;
 		width: 400px;
 		height: 400px;
-		z-index: -1;
+		z-index: 85; /* 前景层：结在屏幕玻璃上的霜，罩在内容角上（低于导航 z-100） */
 		pointer-events: none;
-		opacity: 0.26;
+		opacity: 0.34;
 	}
 	.frost-tr {
-		top: -55px;
-		right: -55px;
+		top: 0;
+		right: 0;
 	}
 	.frost-bl {
-		bottom: -55px;
-		left: -55px;
+		bottom: 0;
+		left: 0;
 	}
 	@media (max-width: 900px) {
 		.frost { display: none; }

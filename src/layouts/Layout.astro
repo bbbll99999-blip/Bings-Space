@@ -43,7 +43,7 @@ const { title = "Bing's Space - 冰冰蓝的小角落", description = '冰冰蓝
 		width: 100%;
 		min-height: 100vh;
 		font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-		overflow-x: hidden;
+		overflow-x: clip; /* clip 不创建滚动容器，不会像 hidden 那样破坏导航条的 position: sticky */
 	}
 
 	body {

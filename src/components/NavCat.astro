@@ -24,6 +24,12 @@ const eyeDirs = ['c', 'lu', 'u', 'ru', 'l', 'r', 'ld', 'd', 'rd'];
 		height: 86px;
 		pointer-events: none;
 		user-select: none;
+		transition: opacity 0.3s ease, transform 0.3s ease;
+	}
+	/* 页面下滚时隐藏趴趴（回到顶部淡入回来） */
+	.nav-cat.cat-hidden {
+		opacity: 0;
+		transform: translateY(-24px);
 	}
 	.cat-body {
 		position: absolute;
@@ -62,6 +68,14 @@ const eyeDirs = ['c', 'lu', 'u', 'ru', 'l', 'r', 'ld', 'd', 'rd'];
 		const cat = document.getElementById('navCat');
 		const eyes = document.getElementById('catEyes');
 		if (!cat || !eyes) return;
+
+		// 滚动时隐藏趴趴：离开顶部约 60px 即淡出，回顶淡入（不受 reduced-motion 影响）
+		const onScroll = () => {
+			cat.classList.toggle('cat-hidden', window.scrollY > 60);
+		};
+		window.addEventListener('scroll', onScroll, { passive: true });
+		onScroll();
+
 		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
 		const frames = {};

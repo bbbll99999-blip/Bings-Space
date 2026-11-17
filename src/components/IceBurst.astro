@@ -1,0 +1,114 @@
+---
+// T1 点击碎冰：点击页面任意处迸出冰晶碎片 + 扩散冰霜光环
+// 独立前景 canvas（z-index 高于内容，pointer-events none 不挡点击）
+// prefers-reduced-motion 不创建；无粒子时 rAF 完全停止
+---
+
+<canvas class="ice-burst" id="iceBurst" aria-hidden="true"></canvas>
+
+<style>
+	.ice-burst {
+		position: fixed;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 90;
+		pointer-events: none;
+	}
+</style>
+
+<script is:inline>
+	(() => {
+		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+		const canvas = document.getElementById('iceBurst');
+		if (!canvas) return;
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return;
+
+		const TINTS = ['rgba(255,255,255,0.95)', 'rgba(186,230,253,0.9)', 'rgba(147,197,253,0.8)'];
+		let shards = [], rings = [], rafId = null, lastT = 0;
+		let W = 0, H = 0;
+
+		const resize = () => {
+			const dpr = Math.min(window.devicePixelRatio || 1, 2);
+			W = window.innerWidth; H = window.innerHeight;
+			canvas.width = W * dpr; canvas.height = H * dpr;
+			ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+		};
+		window.addEventListener('resize', resize, { passive: true });
+		resize();
+
+		const rand = (a, b) => a + Math.random() * (b - a);
+
+		// 一颗冰屑：细长菱形，带自转、重力、消融
+		const makeShard = (x, y) => {
+			const a = rand(0, Math.PI * 2);
+			const spd = rand(140, 340);
+			return {
+				x, y,
+				vx: Math.cos(a) * spd, vy: Math.sin(a) * spd - 60, // 略微向上喷
+				len: rand(5, 14), wid: rand(1.4, 3),
+				rot: rand(0, Math.PI * 2), rotSpd: rand(-9, 9),
+				life: rand(0.45, 0.85), age: 0,
+				tint: TINTS[(Math.random() * TINTS.length) | 0]
+			};
+		};
+
+		const burst = (x, y) => {
+			// 粒子上限：同时最多 ~120 颗
+			const n = Math.min(12, 120 - shards.length);
+			for (let i = 0; i < n; i++) shards.push(makeShard(x, y));
+			rings.push({ x, y, r: 4, life: 0.4, age: 0, tint: 'rgba(186,230,253,0.7)' });
+			if (rafId === null) { lastT = performance.now(); rafId = requestAnimationFrame(tick); }
+		};
+
+		const tick = (t) => {
+			const dt = Math.min((t - lastT) / 1000, 0.05);
+			lastT = t;
+			ctx.clearRect(0, 0, W, H);
+
+			// 冰屑
+			shards = shards.filter((s) => (s.age += dt) < s.life);
+			for (const s of shards) {
+				s.vy += 420 * dt;                       // 重力
+				s.vx *= 0.985; s.vy *= 0.985;           // 空气阻力
+				s.x += s.vx * dt; s.y += s.vy * dt;
+				s.rot += s.rotSpd * dt;
+				const k = 1 - s.age / s.life;           // 消融：渐隐 + 收缩
+				ctx.save();
+				ctx.translate(s.x, s.y);
+				ctx.rotate(s.rot);
+				ctx.globalAlpha = k;
+				ctx.fillStyle = s.tint;
+				ctx.beginPath();
+				ctx.moveTo(0, -s.len * k);
+				ctx.lineTo(s.wid, -s.len * 0.2);
+				ctx.lineTo(0, s.len * 0.5 * k);
+				ctx.lineTo(-s.wid, -s.len * 0.2);
+				ctx.closePath();
+				ctx.fill();
+				ctx.restore();
+			}
+
+			// 冰霜光环：扩散 + 淡出
+			rings = rings.filter((r) => (r.age += dt) < r.life);
+			for (const r of rings) {
+				const k = 1 - r.age / r.life;
+				r.r += 260 * dt;
+				ctx.globalAlpha = k * 0.8;
+				ctx.strokeStyle = r.tint;
+				ctx.lineWidth = 1.6;
+				ctx.beginPath();
+				ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+				ctx.stroke();
+			}
+
+			ctx.globalAlpha = 1;
+			if (shards.length || rings.length) rafId = requestAnimationFrame(tick);
+			else rafId = null;
+		};
+
+		window.addEventListener('click', (e) => burst(e.clientX, e.clientY), { passive: true });
+	})();
+</script>

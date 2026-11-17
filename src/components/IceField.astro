@@ -49,9 +49,9 @@
 		const makeFlake = (fromTop) => {
 			// 约 1/7 概率生成一颗醒目的大冰晶
 			const big = Math.random() < 0.14;
-			// 样式混排：树枝雪花 40% / 雪点 35% / 空心六边形 12% / 四芒星光 13%
+			// 样式混排：树枝雪花 45% / 雪点 45% / 空心六边形 10%
 			const roll = Math.random();
-			const style = roll < 0.40 ? 'dendrite' : roll < 0.75 ? 'dot' : roll < 0.87 ? 'hex' : 'star';
+			const style = roll < 0.45 ? 'dendrite' : roll < 0.90 ? 'dot' : 'hex';
 			return {
 				x: rand(0, W),
 				y: fromTop ? rand(-60, 0) : rand(0, H),
@@ -118,22 +118,6 @@
 				}
 				ctx.closePath();
 				ctx.stroke();
-				ctx.restore();
-				return;
-			}
-
-			// —— 四芒星光：实心收腰闪烁星（✨ 形），细看是光斑不是符号
-			if (f.style === 'star') {
-				const L = f.r * 2.6;
-				const k = L * 0.16; // 收腰深度
-				ctx.beginPath();
-				ctx.moveTo(0, -L);
-				ctx.quadraticCurveTo(k, -k, L, 0);
-				ctx.quadraticCurveTo(k, k, 0, L);
-				ctx.quadraticCurveTo(-k, k, -L, 0);
-				ctx.quadraticCurveTo(-k, -k, 0, -L);
-				ctx.closePath();
-				ctx.fill();
 				ctx.restore();
 				return;
 			}

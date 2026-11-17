@@ -107,37 +107,33 @@
 
 			ctx.lineWidth = f.r > 3.5 ? 1.3 : 0.9;
 
-			// —— 空心六边形：冰晶切面感
+			// —— 空心六边形：远处虚焦冰晶感（弱化版：小、淡、无内部点缀）
 			if (f.style === 'hex') {
+				ctx.globalAlpha = alpha * 0.65;
 				ctx.beginPath();
 				for (let i = 0; i < 6; i++) {
 					const a = (i * Math.PI) / 3;
-					const px = Math.cos(a) * f.r * 1.6, py = Math.sin(a) * f.r * 1.6;
+					const px = Math.cos(a) * f.r * 1.2, py = Math.sin(a) * f.r * 1.2;
 					i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
 				}
 				ctx.closePath();
-				ctx.stroke();
-				// 内部一个小十字点缀
-				ctx.beginPath();
-				ctx.moveTo(-f.r * 0.6, 0); ctx.lineTo(f.r * 0.6, 0);
-				ctx.moveTo(0, -f.r * 0.6); ctx.lineTo(0, f.r * 0.6);
 				ctx.stroke();
 				ctx.restore();
 				return;
 			}
 
-			// —— 四芒星光：长横竖 + 短斜芒的闪光星
+			// —— 四芒星光：实心收腰闪烁星（✨ 形），细看是光斑不是符号
 			if (f.style === 'star') {
+				const L = f.r * 2.6;
+				const k = L * 0.16; // 收腰深度
 				ctx.beginPath();
-				ctx.moveTo(-L, 0); ctx.lineTo(L, 0);
-				ctx.moveTo(0, -L); ctx.lineTo(0, L);
-				ctx.stroke();
-				ctx.lineWidth *= 0.7;
-				const s = L * 0.55;
-				ctx.beginPath();
-				ctx.moveTo(-s, -s); ctx.lineTo(s, s);
-				ctx.moveTo(-s, s); ctx.lineTo(s, -s);
-				ctx.stroke();
+				ctx.moveTo(0, -L);
+				ctx.quadraticCurveTo(k, -k, L, 0);
+				ctx.quadraticCurveTo(k, k, 0, L);
+				ctx.quadraticCurveTo(-k, k, -L, 0);
+				ctx.quadraticCurveTo(-k, -k, 0, -L);
+				ctx.closePath();
+				ctx.fill();
 				ctx.restore();
 				return;
 			}

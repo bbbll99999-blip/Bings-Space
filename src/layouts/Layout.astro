@@ -5,6 +5,7 @@ interface Props {
 }
 
 const { title = "Bing's Space - 冰冰蓝的小角落", description = '冰冰蓝的个人主页，记录音乐作品、平面设计、绘画创作与日志。' } = Astro.props;
+import IceField from '../components/IceField.astro';
 ---
 
 <!doctype html>
@@ -27,6 +28,7 @@ const { title = "Bing's Space - 冰冰蓝的小角落", description = '冰冰蓝
 			<div class="shape shape-2"></div>
 			<div class="shape shape-3"></div>
 		</div>
+		<IceField />
 		<slot />
 	</body>
 </html>

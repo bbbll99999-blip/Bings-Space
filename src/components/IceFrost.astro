@@ -1,64 +1,79 @@
 ---
-// B3 霜花角落：静态 SVG 冰晶簇，从右上/左下两个对角向页面内辐射
-// z-index -1 在背景层（透过磨砂玻璃卡朦胧可见），pointer-events none
-const crystal = (len: number, tw: number) =>
+// B3 霜花角落 v2：角落聚一组完整的六角雪花结晶 + 冰点（弃用抽象枝条方案）
+// 前景层 z-index 85（内容上、导航下），pointer-events none，<900px 隐藏
+// 注意：Astro frontmatter 不能定义返回 JSX 的函数，只能数据驱动 + 模板内 map
+const branch = (len: number, tw: number) =>
 	`M0 0 L${len} 0 ` +
-	`M${len * 0.5} 0 L${len * 0.5 + tw} ${-tw * 1.1} M${len * 0.5} 0 L${len * 0.5 + tw} ${tw * 1.1} ` +
-	`M${len * 0.78} 0 L${len * 0.78 + tw * 0.8} ${-tw * 0.85} M${len * 0.78} 0 L${len * 0.78 + tw * 0.8} ${tw * 0.85}`;
-// 一簇 = 3 枝不同角度/长度的结晶 + 几粒冰点（相对主枝角度的偏移）
-const bloom = [
-	{ rot: 0, s: 1, o: 0.7 },
-	{ rot: 30, s: 0.72, o: 0.55 },
-	{ rot: 60, s: 0.5, o: 0.45 },
+	`M${len * 0.5} 0 L${len * 0.5 + tw} ${-tw} M${len * 0.5} 0 L${len * 0.5 + tw} ${tw} ` +
+	`M${len * 0.78} 0 L${len * 0.78 + tw * 0.7} ${-tw * 0.7} M${len * 0.78} 0 L${len * 0.78 + tw * 0.7} ${tw * 0.7}`;
+
+const angles = [0, 60, 120, 180, 240, 300];
+
+// 右上角雪花簇（x/y 为 300x300 视口内坐标，R=雪花半径，o=透明度，rot=整体旋转）
+const flakesTR = [
+	{ x: 150, y: 60, R: 46, o: 0.75, rot: 15 },
+	{ x: 62, y: 130, R: 30, o: 0.6, rot: 40 },
+	{ x: 185, y: 155, R: 22, o: 0.5, rot: -20 },
+	{ x: 110, y: 210, R: 16, o: 0.4, rot: 70 },
 ];
-const dots = [
-	{ x: 180, y: 88, r: 2.2 }, { x: 120, y: 150, r: 1.7 }, { x: 240, y: 52, r: 1.5 },
-	{ x: 76, y: 205, r: 1.9 }, { x: 280, y: 30, r: 1.3 },
+const dotsTR = [
+	{ x: 230, y: 100, r: 3, o: 0.4 }, { x: 95, y: 55, r: 2.4, o: 0.4 }, { x: 205, y: 210, r: 2, o: 0.35 },
 ];
+// 左下角 = 右上角点对称（300 - x/y）
+const flakesBL = flakesTR.map((f) => ({ ...f, x: 300 - f.x, y: 300 - f.y }));
+const dotsBL = dotsTR.map((d) => ({ ...d, x: 300 - d.x, y: 300 - d.y }));
 ---
 
-<svg class="frost frost-tr" viewBox="0 0 400 400" aria-hidden="true">
-	{bloom.map((b) => (
-		<path
-			d={crystal(230 * b.s, 24 * b.s)}
-			transform={`translate(400 0) rotate(${100 + b.rot}) scale(${b.s})`}
-			fill="none"
-			stroke="#38bdf8"
-			stroke-width={2.2}
-			stroke-linecap="round"
-			opacity={b.o}
-		/>
+<svg class="frost frost-tr" viewBox="0 0 300 300" aria-hidden="true">
+	{flakesTR.map((f) => (
+		<g transform={`translate(${f.x} ${f.y}) rotate(${f.rot})`} opacity={f.o}>
+			{angles.map((a) => (
+				<path
+					d={branch(f.R, f.R * 0.22)}
+					transform={`rotate(${a})`}
+					fill="none"
+					stroke="#38bdf8"
+					stroke-width={f.R * 0.09}
+					stroke-linecap="round"
+				/>
+			))}
+			<circle r={f.R * 0.14} fill="#38bdf8" />
+		</g>
 	))}
-	{dots.map((d) => (
-		<circle cx={400 - d.x} cy={d.y} r={d.r} fill="#38bdf8" opacity="0.45" />
+	{dotsTR.map((d) => (
+		<circle cx={d.x} cy={d.y} r={d.r} fill="#38bdf8" opacity={d.o} />
 	))}
 </svg>
 
-<svg class="frost frost-bl" viewBox="0 0 400 400" aria-hidden="true">
-	{bloom.map((b) => (
-		<path
-			d={crystal(210 * b.s, 22 * b.s)}
-			transform={`translate(0 400) rotate(${-80 + b.rot}) scale(${b.s})`}
-			fill="none"
-			stroke="#38bdf8"
-			stroke-width={2.6}
-			stroke-linecap="round"
-			opacity={b.o}
-		/>
+<svg class="frost frost-bl" viewBox="0 0 300 300" aria-hidden="true">
+	{flakesBL.map((f) => (
+		<g transform={`translate(${f.x} ${f.y}) rotate(${f.rot})`} opacity={f.o}>
+			{angles.map((a) => (
+				<path
+					d={branch(f.R, f.R * 0.22)}
+					transform={`rotate(${a})`}
+					fill="none"
+					stroke="#38bdf8"
+					stroke-width={f.R * 0.09}
+					stroke-linecap="round"
+				/>
+			))}
+			<circle r={f.R * 0.14} fill="#38bdf8" />
+		</g>
 	))}
-	{dots.map((d) => (
-		<circle cx={d.x} cy={400 - d.y} r={d.r} fill="#38bdf8" opacity="0.45" />
+	{dotsBL.map((d) => (
+		<circle cx={d.x} cy={d.y} r={d.r} fill="#38bdf8" opacity={d.o} />
 	))}
 </svg>
 
 <style>
 	.frost {
 		position: fixed;
-		width: 400px;
-		height: 400px;
-		z-index: 85; /* 前景层：结在屏幕玻璃上的霜，罩在内容角上（低于导航 z-100） */
+		width: 300px;
+		height: 300px;
+		z-index: 85; /* 前景层：结在屏幕玻璃上的霜（内容上、导航 z-100 下） */
 		pointer-events: none;
-		opacity: 0.34;
+		opacity: 0.4;
 	}
 	.frost-tr {
 		top: 0;

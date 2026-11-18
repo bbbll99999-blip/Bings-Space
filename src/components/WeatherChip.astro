@@ -1,0 +1,120 @@
+---
+// 天气小条：显示在日历卡片顶部（与时钟并排）
+// 数据源 Open-Meteo 免费接口（无需 key），坐标默认东莞东城，改 CITY 参数即可换城市
+const CITY_NAME = '东莞';
+const LAT = 23.0207;
+const LON = 113.7518;
+---
+
+<span class="weather-chip" id="weatherChip" hidden>
+	<span class="weather-icon" id="weatherIcon"></span>
+	<span class="weather-text"><span class="weather-city">{CITY_NAME}</span><span id="weatherDetail">获取中…</span></span>
+</span>
+
+<style>
+	.weather-chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		background: var(--soft-bg);
+		backdrop-filter: blur(4px);
+		border-radius: 12px;
+		border: 1px solid var(--soft-border);
+		padding: 0.35rem 0.7rem;
+		width: fit-content;
+		min-width: 120px;
+		transition: all 0.2s ease;
+	}
+
+	.weather-icon {
+		display: flex;
+		align-items: center;
+		color: var(--grad-start);
+	}
+
+	.weather-icon :global(svg) {
+		width: 18px;
+		height: 18px;
+	}
+
+	.weather-text {
+		display: flex;
+		align-items: baseline;
+		gap: 0.4rem;
+		color: var(--text-body);
+		font-size: 0.8rem;
+		white-space: nowrap;
+	}
+
+	.weather-city {
+		font-weight: 600;
+		color: var(--text-primary);
+	}
+
+	@media (max-width: 768px) {
+		.weather-text {
+			font-size: 0.72rem;
+		}
+	}
+</style>
+
+<script is:inline>
+	function initWeather() {
+		const chip = document.getElementById('weatherChip');
+		const iconEl = document.getElementById('weatherIcon');
+		const detailEl = document.getElementById('weatherDetail');
+		if (!chip || !iconEl || !detailEl || chip.dataset.bound) return;
+		chip.dataset.bound = '1';
+
+		// WMO 天气代码 → 中文 + 图标（icon 取值见下方 ICONS）
+		const describe = (code) => {
+			if (code === 0) return { text: '晴', icon: 'sun' };
+			if (code === 1 || code === 2) return { text: '多云', icon: 'cloud-sun' };
+			if (code === 3) return { text: '阴', icon: 'cloud' };
+			if (code === 45 || code === 48) return { text: '雾', icon: 'cloud' };
+			if (code >= 51 && code <= 57) return { text: '毛毛雨', icon: 'rain' };
+			if (code >= 61 && code <= 67) return { text: '雨', icon: 'rain' };
+			if (code >= 71 && code <= 77) return { text: '雪', icon: 'snow' };
+			if (code >= 80 && code <= 82) return { text: '阵雨', icon: 'rain' };
+			if (code === 85 || code === 86) return { text: '阵雪', icon: 'snow' };
+			if (code >= 95) return { text: '雷雨', icon: 'storm' };
+			return { text: '——', icon: 'cloud' };
+		};
+
+		// 线条风格小图标，与全站雪花图标同语言
+		const ICONS = {
+			sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"/></svg>',
+			'cloud-sun': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8.5" cy="7.5" r="2.8"/><path d="M8.5 2.8v1.6M3.8 7.5h1.6M5.2 3.9l1.2 1.2"/><path d="M11 13.5h5.2a3.3 3.3 0 0 1 0 6.6H11a3.3 3.3 0 0 1 0-6.6z"/></svg>',
+			cloud: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 18.5h10a3.8 3.8 0 0 0 .5-7.6 5.5 5.5 0 0 0-10.8 1A3.4 3.4 0 0 0 7 18.5z"/></svg>',
+			rain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 15.5h10a3.8 3.8 0 0 0 .5-7.6 5.5 5.5 0 0 0-10.8 1A3.4 3.4 0 0 0 7 15.5z"/><path d="M9 18.5l-.8 2.2M13 18.5l-.8 2.2M17 18.5l-.8 2.2"/></svg>',
+			snow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 15.5h10a3.8 3.8 0 0 0 .5-7.6 5.5 5.5 0 0 0-10.8 1A3.4 3.4 0 0 0 7 15.5z"/><path d="M8.5 18.8h.01M12 20.2h.01M15.5 18.8h.01" stroke-width="2.4"/></svg>',
+			storm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 14.5h10a3.8 3.8 0 0 0 .5-7.6 5.5 5.5 0 0 0-10.8 1A3.4 3.4 0 0 0 7 14.5z"/><path d="M12.5 15.5l-2.2 3.6h2.8l-1.8 3.4"/></svg>'
+		};
+
+		const load = async () => {
+			try {
+				const url = 'https://api.open-meteo.com/v1/forecast?latitude=23.0207&longitude=113.7518'
+					+ '&current=temperature_2m,weather_code&timezone=Asia%2FShanghai';
+				const res = await fetch(url, { cache: 'no-store' });
+				if (!res.ok) throw new Error(res.status);
+				const data = await res.json();
+				const cur = data && data.current;
+				if (!cur || typeof cur.temperature_2m !== 'number') throw new Error('bad data');
+
+				const w = describe(cur.weather_code);
+				iconEl.innerHTML = ICONS[w.icon] || ICONS.cloud;
+				detailEl.textContent = w.text + ' ' + Math.round(cur.temperature_2m) + '°C';
+				chip.hidden = false;
+			} catch (e) {
+				// 获取失败就整条隐藏，不留坏占位
+				chip.hidden = true;
+			}
+		};
+
+		load();
+		setInterval(load, 30 * 60 * 1000); // 半小时刷新一次
+	}
+
+	initWeather();
+	document.addEventListener('astro:after-swap', initWeather);
+</script>

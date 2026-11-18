@@ -91,27 +91,53 @@ const LON = 113.7518;
 			storm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 14.5h10a3.8 3.8 0 0 0 .5-7.6 5.5 5.5 0 0 0-10.8 1A3.4 3.4 0 0 0 7 14.5z"/><path d="M12.5 15.5l-2.2 3.6h2.8l-1.8 3.4"/></svg>'
 		};
 
+		const apply = (p) => {
+			iconEl.innerHTML = ICONS[p.icon] || ICONS.cloud;
+			detailEl.textContent = p.text;
+			chip.hidden = false;
+		};
+
 		const load = async () => {
 			try {
+				const ctrl = new AbortController();
+				const timer = setTimeout(() => ctrl.abort(), 5000); // 5 秒超时，避免长时间挂着获取中
 				const url = 'https://api.open-meteo.com/v1/forecast?latitude=23.0207&longitude=113.7518'
 					+ '&current=temperature_2m,weather_code&timezone=Asia%2FShanghai';
-				const res = await fetch(url, { cache: 'no-store' });
+				const res = await fetch(url, { cache: 'no-store', signal: ctrl.signal });
+				clearTimeout(timer);
 				if (!res.ok) throw new Error(res.status);
 				const data = await res.json();
 				const cur = data && data.current;
 				if (!cur || typeof cur.temperature_2m !== 'number') throw new Error('bad data');
 
 				const w = describe(cur.weather_code);
-				iconEl.innerHTML = ICONS[w.icon] || ICONS.cloud;
-				detailEl.textContent = w.text + ' ' + Math.round(cur.temperature_2m) + '°C';
-				chip.hidden = false;
+				const payload = {
+					t: Date.now(),
+					icon: w.icon,
+					text: w.text + ' ' + Math.round(cur.temperature_2m) + '°C'
+				};
+				apply(payload);
+				try { localStorage.setItem('weatherCache', JSON.stringify(payload)); } catch (e) {}
 			} catch (e) {
-				// 获取失败就整条隐藏，不留坏占位
-				chip.hidden = true;
+				// 超时/失败：有缓存就留着用，没缓存才隐藏，不留坏占位
+				if (!chip.hidden && !detailEl.textContent.trim()) chip.hidden = true;
 			}
 		};
 
-		load();
+		// 先用缓存立即显示（2 小时内有效），再后台刷新——避免「获取中…」干等
+		let hasCache = false;
+		try {
+			const cached = JSON.parse(localStorage.getItem('weatherCache') || 'null');
+			if (cached && cached.icon && Date.now() - cached.t < 2 * 60 * 60 * 1000) {
+				apply(cached);
+				hasCache = true;
+			}
+		} catch (e) {}
+		if (!hasCache) {
+			load();
+		} else {
+			load().catch(() => {}); // 后台静默更新
+		}
 		setInterval(load, 30 * 60 * 1000); // 半小时刷新一次
 	}
 

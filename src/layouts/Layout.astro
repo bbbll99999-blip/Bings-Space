@@ -8,6 +8,7 @@ const { title = "Bing's Space - 冰冰蓝的小角落", description = '冰冰蓝
 import IceField from '../components/IceField.astro';
 import IceBurst from '../components/IceBurst.astro';
 import BackToTop from '../components/BackToTop.astro';
+import Footer from '../components/Footer.astro';
 import { ClientRouter } from 'astro:transitions';
 ---
 
@@ -54,6 +55,7 @@ import { ClientRouter } from 'astro:transitions';
 		<IceBurst />
 		<BackToTop />
 		<slot />
+		<Footer />
 	</body>
 </html>
 

@@ -1,0 +1,103 @@
+---
+// 全站页脚：签名 + 时段问候彩蛋
+// 彩蛋文案按访问时间变化，深夜（23:00~5:00）有专属隐藏问候
+---
+
+<footer class="site-footer">
+	<div class="footer-inner">
+		<p class="footer-greeting" id="footerGreeting"></p>
+		<p class="footer-sign">
+			<svg class="flake" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+				<path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19" />
+			</svg>
+			© 2026 Bing's Space · 冰冰蓝
+			<svg class="flake" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+				<path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19" />
+			</svg>
+		</p>
+	</div>
+</footer>
+
+<style>
+	.site-footer {
+		width: 100%;
+		margin-top: 4rem;
+		padding: 1.5rem 1rem 2rem;
+		text-align: center;
+	}
+
+	.footer-inner {
+		max-width: 800px;
+		margin: 0 auto;
+		padding-top: 1.25rem;
+		border-top: 1px solid var(--divider);
+	}
+
+	.footer-greeting {
+		margin: 0 0 0.5rem;
+		font-size: 0.85rem;
+		color: var(--text-muted);
+		transition: opacity 0.3s ease;
+	}
+
+	.footer-greeting.night {
+		color: var(--text-secondary);
+	}
+
+	.footer-sign {
+		margin: 0;
+		font-size: 0.8rem;
+		color: var(--text-faint);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+	}
+
+	.flake {
+		color: var(--text-faint);
+		opacity: 0.7;
+	}
+
+	@media (max-width: 768px) {
+		.site-footer {
+			margin-top: 2.5rem;
+		}
+	}
+</style>
+
+<script is:inline>
+	function initFooterGreeting() {
+		const el = document.getElementById('footerGreeting');
+		if (!el || el.dataset.bound) return;
+		el.dataset.bound = '1';
+
+		const pick = () => {
+			const h = new Date().getHours();
+			let text;
+			if (h >= 5 && h < 8) {
+				text = '清晨的雪还没化，早呀。';
+			} else if (h >= 8 && h < 12) {
+				text = '上午好，今天的云看起来怎么样？';
+			} else if (h >= 12 && h < 14) {
+				text = '午间小憩时间，慢慢逛。';
+			} else if (h >= 14 && h < 18) {
+				text = '下午好，一杯热茶的时间刚刚好。';
+			} else if (h >= 18 && h < 23) {
+				text = '晚上好，今天过得怎么样？';
+			} else {
+				// 23:00 ~ 5:00 深夜专属彩蛋
+				text = '这么晚还没睡？雪陪你一起醒着。别熬太久哦。';
+				el.classList.add('night');
+			}
+			if (text) el.textContent = text;
+		};
+
+		pick();
+		// 页面停留跨时段时自动更新
+		setInterval(pick, 60 * 1000);
+	}
+
+	initFooterGreeting();
+	document.addEventListener('astro:after-swap', initFooterGreeting);
+</script>

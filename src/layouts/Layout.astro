@@ -7,7 +7,6 @@ interface Props {
 const { title = "Bing's Space - 冰冰蓝的小角落", description = '冰冰蓝的个人主页，记录音乐作品、平面设计、绘画创作与日志。' } = Astro.props;
 import IceField from '../components/IceField.astro';
 import IceBurst from '../components/IceBurst.astro';
-import IceFrost from '../components/IceFrost.astro';
 ---
 
 <!doctype html>
@@ -19,6 +18,20 @@ import IceFrost from '../components/IceFrost.astro';
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
 		<title>{title}</title>
+		<!-- 主题预置：在首帧渲染前确定 light/dark，避免闪白/闪黑 -->
+		<script is:inline>
+			(() => {
+				try {
+					// 优先级：URL 参数（调试用）> localStorage > 系统偏好
+					const urlTheme = new URLSearchParams(location.search).get('theme');
+					const saved = localStorage.getItem('theme');
+					const theme = urlTheme || saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+					document.documentElement.dataset.theme = theme;
+				} catch (e) {
+					document.documentElement.dataset.theme = 'light';
+				}
+			})();
+		</script>
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -37,6 +50,71 @@ import IceFrost from '../components/IceFrost.astro';
 </html>
 
 <style is:global>
+	/* ── 主题变量（暗色 = 冰夜蓝黑，禁紫） ─────────────────── */
+	:root {
+		color-scheme: light;
+		--bg-body: #f5f7fa;
+		--text-primary: #1e293b;   /* 标题 */
+		--text-body: #475569;      /* 正文 */
+		--text-secondary: #64748b; /* 次要 */
+		--text-muted: #94a3b8;     /* 弱化 */
+		--text-faint: #cbd5e1;     /* 序号等点缀 */
+		--grad-start: #3b82f6;
+		--grad-end: #2563eb;
+
+		--card-bg: rgba(255, 255, 255, 0.7);
+		--card-border: rgba(255, 255, 255, 0.3);
+		--card-inset: rgba(255, 255, 255, 0.8);
+		--card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+		--tile-bg: #ffffff;                    /* 卡片内的白底小块（社交按钮/技能卡/作品卡） */
+		--tile-border: rgba(0, 0, 0, 0.05);
+		--soft-bg: rgba(255, 255, 255, 0.4);   /* 日历格 / 时间按钮 */
+		--soft-border: rgba(255, 255, 255, 0.3);
+		--item-bg: rgba(255, 255, 255, 0.5);   /* 日志列表项等半透明块 */
+		--item-bg-hover: rgba(255, 255, 255, 0.9);
+		--workcard-bg: rgba(255, 255, 255, 0.8);
+		--img-ph: #f0f9ff;                     /* 图片占位背景 */
+
+		--divider: #f1f5f9;        /* 分割线 / 表格行线 */
+		--divider-strong: #f8fafc; /* 表头底线 */
+		--row-hover: #fafafa;      /* 表格行悬停 */
+		--line: #e2e8f0;           /* 描边线 */
+		--hairline: rgba(0, 0, 0, 0.1);
+	}
+
+	html[data-theme='dark'] {
+		color-scheme: dark;
+		--bg-body: #0d1526;
+		--text-primary: #e2e8f0;
+		--text-body: #a9b7cc;
+		--text-secondary: #8ba0b9;
+		--text-muted: #7189a6;
+		--text-faint: #4a5e7d;
+		--grad-start: #60a5fa;
+		--grad-end: #3b82f6;
+
+		--card-bg: rgba(17, 27, 45, 0.72);
+		--card-border: rgba(148, 163, 184, 0.18);
+		--card-inset: rgba(255, 255, 255, 0.06);
+		--card-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+
+		--tile-bg: #18243c;
+		--tile-border: rgba(148, 163, 184, 0.15);
+		--soft-bg: rgba(148, 163, 184, 0.1);
+		--soft-border: rgba(148, 163, 184, 0.2);
+		--item-bg: rgba(20, 31, 52, 0.6);
+		--item-bg-hover: rgba(30, 43, 68, 0.85);
+		--workcard-bg: rgba(23, 34, 56, 0.8);
+		--img-ph: #16233a;
+
+		--divider: #22304a;
+		--divider-strong: #1d2b44;
+		--row-hover: rgba(255, 255, 255, 0.03);
+		--line: #2a3a58;
+		--hairline: rgba(148, 163, 184, 0.25);
+	}
+
 	* {
 		box-sizing: border-box;
 	}
@@ -53,7 +131,9 @@ import IceFrost from '../components/IceFrost.astro';
 
 	body {
 		position: relative;
-		background: #f5f7fa;
+		background: var(--bg-body);
+		color: var(--text-body);
+		transition: background-color 0.25s ease, color 0.25s ease;
 	}
 
 	.background-gradient {
@@ -66,6 +146,10 @@ import IceFrost from '../components/IceFrost.astro';
 		background: linear-gradient(135deg, #67e8f9 0%, #3db5e4 40%, #004758 100%);
 		opacity: 0.06;
 		z-index: -2;
+	}
+
+	html[data-theme='dark'] .background-gradient {
+		opacity: 0.14; /* 暗色下冰青渐变更明显一点，避免死黑 */
 	}
 
 	.background-shapes {
@@ -84,6 +168,10 @@ import IceFrost from '../components/IceFrost.astro';
 		filter: blur(80px);
 		opacity: 0.3;
 		animation: float 20s infinite ease-in-out;
+	}
+
+	html[data-theme='dark'] .shape {
+		opacity: 0.16; /* 暗色下光斑收敛，不抢内容 */
 	}
 
 	.shape-1 {
@@ -127,13 +215,14 @@ import IceFrost from '../components/IceFrost.astro';
 	}
 
 	.glass-card {
-		background-color: rgba(255, 255, 255, 0.7);
+		background-color: var(--card-bg);
 		backdrop-filter: blur(10px);
 		-webkit-backdrop-filter: blur(10px);
 		border-radius: 16px;
-		border: 1px solid rgba(255, 255, 255, 0.3);
+		border: 1px solid var(--card-border);
 		box-shadow:
-			0 8px 32px rgba(0, 0, 0, 0.1),
-			inset 0 1px 0 rgba(255, 255, 255, 0.8);
+			var(--card-shadow),
+			inset 0 1px 0 var(--card-inset);
+		transition: background-color 0.25s ease, border-color 0.25s ease;
 	}
 </style>

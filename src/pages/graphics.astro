@@ -242,7 +242,7 @@ import graphicWorks from '../data/graphics.js';
 	.page-header h1 {
 		font-size: 3.5rem;
 		font-weight: 800;
-		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		background: linear-gradient(135deg, var(--grad-start) 0%, var(--grad-end) 100%);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
@@ -251,7 +251,7 @@ import graphicWorks from '../data/graphics.js';
 
 	.page-header p.disclaimer {
 		font-size: 0.9rem;
-		color: #94a3b8;
+		color: var(--text-muted);
 		letter-spacing: 1px;
 		margin-top: 1rem;
 		font-style: italic;
@@ -272,9 +272,9 @@ import graphicWorks from '../data/graphics.js';
 		gap: 1rem;
 		font-size: 1.5rem;
 		font-weight: 800;
-		color: #1e293b;
+		color: var(--text-primary);
 		margin-bottom: 2rem;
-		border-bottom: 2px solid #e2e8f0;
+		border-bottom: 2px solid var(--line);
 		padding-bottom: 0.75rem;
 	}
 
@@ -292,13 +292,13 @@ import graphicWorks from '../data/graphics.js';
 
 	.work-card {
 		padding: 1.5rem;
-		background: rgba(255, 255, 255, 0.8);
+		background: var(--workcard-bg);
 		border-radius: 16px;
 		transition: all 0.3s ease;
 	}
 
 	.work-card:hover {
-		background: white;
+		background: var(--tile-bg);
 		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.1);
 	}
 
@@ -312,7 +312,7 @@ import graphicWorks from '../data/graphics.js';
 	.work-card h3 {
 		font-size: 1.2rem;
 		font-weight: 700;
-		color: #1e293b;
+		color: var(--text-primary);
 		margin: 0;
 	}
 
@@ -338,8 +338,8 @@ import graphicWorks from '../data/graphics.js';
 		overflow: hidden;
 		cursor: zoom-in;
 		position: relative;
-		border: 1px solid #e2e8f0;
-		background: #f8fafc;
+		border: 1px solid var(--line);
+		background: var(--img-ph);
 		box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 		transition: transform 0.2s ease;
 	}
@@ -476,7 +476,7 @@ import graphicWorks from '../data/graphics.js';
 	.lightbox-counter {
 		font-size: 0.82rem;
 		letter-spacing: 0.08em;
-		color: #94a3b8;
+		color: var(--text-muted);
 		margin-bottom: 0.35rem;
 		font-variant-numeric: tabular-nums;
 	}

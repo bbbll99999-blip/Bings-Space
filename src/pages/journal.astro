@@ -85,7 +85,7 @@ const categories = Object.keys(postsByCategory).sort();
 		font-size: 3rem;
 		font-weight: 800;
 		margin: 0 0 1rem;
-		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		background: linear-gradient(135deg, var(--grad-start) 0%, var(--grad-end) 100%);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
@@ -93,7 +93,7 @@ const categories = Object.keys(postsByCategory).sort();
 
 	.page-header p {
 		font-size: 1.2rem;
-		color: #64748b;
+		color: var(--text-secondary);
 		margin: 0;
 	}
 
@@ -113,13 +113,13 @@ const categories = Object.keys(postsByCategory).sort();
 		gap: 1.5rem;
 		margin-bottom: 2rem;
 		padding-bottom: 1rem;
-		border-bottom: 2px solid #f1f5f9;
+		border-bottom: 2px solid var(--divider);
 	}
 
 	.category-badge {
 		font-size: 1.4rem;
 		font-weight: 800;
-		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		background: linear-gradient(135deg, var(--grad-start) 0%, var(--grad-end) 100%);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
@@ -130,7 +130,7 @@ const categories = Object.keys(postsByCategory).sort();
 	}
 
 	.post-count {
-		color: #94a3b8;
+		color: var(--text-muted);
 		font-size: 1rem;
 		font-weight: 600;
 		background: transparent;
@@ -145,15 +145,15 @@ const categories = Object.keys(postsByCategory).sort();
 	}
 
 	.post-item {
-		background: rgba(255, 255, 255, 0.5);
+		background: var(--item-bg);
 		border-radius: 16px;
 		padding: 1.5rem;
 		transition: all 0.3s ease;
-		border: 1px solid rgba(255, 255, 255, 0.3);
+		border: 1px solid var(--soft-border);
 	}
 
 	.post-item:hover {
-		background: rgba(255, 255, 255, 0.9);
+		background: var(--item-bg-hover);
 		transform: translateX(8px);
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 	}
@@ -166,17 +166,17 @@ const categories = Object.keys(postsByCategory).sort();
 	.post-item h3 {
 		font-size: 1.4rem;
 		font-weight: 700;
-		color: #1e293b; /* 回归深色，保持稳重 */
+		color: var(--text-primary); /* 回归深色，保持稳重 */
 		margin: 0 0 0.75rem;
 		transition: color 0.3s ease;
 	}
 
 	.post-item:hover h3 {
-		color: #1d4ed8; /* 悬停时颜色深一点 */
+		color: var(--grad-end); /* 悬停时颜色深一点 */
 	}
 
 	.description {
-		color: #475569;
+		color: var(--text-body);
 		font-size: 1rem;
 		line-height: 1.8;
 		margin: 0 0 1.25rem;
@@ -184,7 +184,7 @@ const categories = Object.keys(postsByCategory).sort();
 
 	.date {
 		font-size: 0.9rem;
-		color: #64748b; /* 日期回归灰色 */
+		color: var(--text-secondary); /* 日期回归灰色 */
 		font-weight: 500;
 	}
 

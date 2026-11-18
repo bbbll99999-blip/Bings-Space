@@ -53,16 +53,16 @@ const thumbSrc = (src) => src.startsWith('/graphics/') ? src.replace(/\.jpg$/, '
 	h2 {
 		font-size: 2.4rem;
 		font-weight: 800;
-		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		background: linear-gradient(135deg, var(--grad-start) 0%, var(--grad-end) 100%);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
 		margin: 0 0 0.5rem;
 		display: inline-block;
 	}
-	.subtitle { color: #94a3b8; font-size: 1.1rem; margin: 0; }
+	.subtitle { color: var(--text-muted); font-size: 1.1rem; margin: 0; }
 	.view-all {
-		color: #2563eb;
+		color: var(--grad-end);
 		font-size: 1rem;
 		font-weight: 600;
 		text-decoration: none;
@@ -71,12 +71,12 @@ const thumbSrc = (src) => src.startsWith('/graphics/') ? src.replace(/\.jpg$/, '
 	.view-all:hover { text-decoration: underline; }
 
 	.stats-line {
-		color: #94a3b8;
+		color: var(--text-muted);
 		font-size: 0.95rem;
 		letter-spacing: 0.5px;
 		margin: 0 0 1.75rem;
 		padding-bottom: 1.25rem;
-		border-bottom: 2px solid #f8fafc;
+		border-bottom: 2px solid var(--divider-strong);
 	}
 
 	.works-row {
@@ -87,8 +87,8 @@ const thumbSrc = (src) => src.startsWith('/graphics/') ? src.replace(/\.jpg$/, '
 	.work-card {
 		display: block;
 		text-decoration: none;
-		background: #fff;
-		border: 1px solid #e2e8f0;
+		background: var(--tile-bg);
+		border: 1px solid var(--line);
 		border-radius: 14px;
 		overflow: hidden;
 		transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -100,7 +100,7 @@ const thumbSrc = (src) => src.startsWith('/graphics/') ? src.replace(/\.jpg$/, '
 	.card-img {
 		aspect-ratio: 16 / 9;
 		overflow: hidden;
-		background: #f0f9ff;
+		background: var(--img-ph);
 	}
 	.card-img img {
 		width: 100%;
@@ -115,8 +115,8 @@ const thumbSrc = (src) => src.startsWith('/graphics/') ? src.replace(/\.jpg$/, '
 		gap: 0.5rem;
 		padding: 0.9rem 1.1rem;
 	}
-	.name { font-size: 1.02rem; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-	.time { font-size: 0.82rem; color: #94a3b8; white-space: nowrap; }
+	.name { font-size: 1.02rem; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+	.time { font-size: 0.82rem; color: var(--text-muted); white-space: nowrap; }
 
 	/* 移动端：4 列 → 2 列 → 1 列 */
 	@media (max-width: 1000px) { .works-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

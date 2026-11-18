@@ -226,22 +226,24 @@ import IceBurst from '../components/IceBurst.astro';
 		transition: background-color 0.25s ease, border-color 0.25s ease;
 	}
 
-	/* ── 暗色模式：给蓝色大字加白色描边，避免深底上看不清 ──
-	   paint-order: stroke fill 让描边画在填充后面（外侧），不啃掉渐变字芯；
-	   旧浏览器不支持时描边会压在字上，视觉略瘦但可接受 */
+	/* ── 暗色模式：给蓝色大字加白色外发光，避免深底上看不清 ──
+	   drop-shadow 作用于渲染后的渐变像素，光晕只在字外围，不侵蚀字芯 */
 	html[data-theme='dark'] :is(.page-header h1, .hero h1, .section-header h2) {
-		-webkit-text-stroke: 3px rgba(255, 255, 255, 0.55);
-		paint-order: stroke fill;
+		filter:
+			drop-shadow(0 0 6px rgba(255, 255, 255, 0.4))
+			drop-shadow(0 0 16px rgba(147, 197, 253, 0.3));
 	}
 
 	html[data-theme='dark'] .category-badge {
-		-webkit-text-stroke: 2px rgba(255, 255, 255, 0.55);
-		paint-order: stroke fill;
+		filter:
+			drop-shadow(0 0 4px rgba(255, 255, 255, 0.4))
+			drop-shadow(0 0 12px rgba(147, 197, 253, 0.3));
 	}
 
-	/* 小号蓝字（关于我副标题）描边细一些 */
+	/* 小号蓝字（关于我副标题）光晕收敛一些 */
 	html[data-theme='dark'] .subtitle {
-		-webkit-text-stroke: 1.2px rgba(255, 255, 255, 0.5);
-		paint-order: stroke fill;
+		filter:
+			drop-shadow(0 0 3px rgba(255, 255, 255, 0.35))
+			drop-shadow(0 0 8px rgba(147, 197, 253, 0.25));
 	}
 </style>

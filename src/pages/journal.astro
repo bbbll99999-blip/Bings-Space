@@ -30,6 +30,20 @@ const categories = Object.keys(postsByCategory).sort();
 		<div class="page-header">
 			<h1>日志</h1>
 			<p>记录生活中的每一个平凡与不平凡</p>
+			<div class="search-wrap">
+				<svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<circle cx="11" cy="11" r="8" />
+					<path d="M21 21l-4.35-4.35" />
+				</svg>
+				<input
+					type="search"
+					id="journalSearch"
+					class="journal-search"
+					placeholder="搜索日志标题 / 内容摘要…"
+					autocomplete="off"
+				/>
+			</div>
+			<p class="search-hint" id="searchHint"></p>
 		</div>
 
 		<div class="categories-grid">
@@ -193,4 +207,94 @@ const categories = Object.keys(postsByCategory).sort();
 		.category-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
 		.post-item:hover { transform: translateY(-4px); }
 	}
+
+	/* ── 日志搜索 ── */
+	.search-wrap {
+		position: relative;
+		max-width: 420px;
+		margin: 2rem auto 0;
+	}
+
+	.search-icon {
+		position: absolute;
+		left: 0.9rem;
+		top: 50%;
+		transform: translateY(-50%);
+		color: var(--text-muted);
+		pointer-events: none;
+	}
+
+	.journal-search {
+		width: 100%;
+		padding: 0.7rem 1rem 0.7rem 2.6rem;
+		font-size: 0.95rem;
+		font-family: inherit;
+		color: var(--text-primary);
+		background: var(--soft-bg);
+		border: 1px solid var(--soft-border);
+		border-radius: 12px;
+		outline: none;
+		transition: all 0.2s ease;
+		backdrop-filter: blur(6px);
+	}
+
+	.journal-search::placeholder { color: var(--text-muted); }
+
+	.journal-search:focus {
+		border-color: var(--grad-start);
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+	}
+
+	.search-hint {
+		font-size: 0.85rem;
+		color: var(--text-muted);
+		margin: 0.75rem 0 0;
+		min-height: 1.2em;
+	}
+
+	/* 搜索态：被过滤隐藏的分类/文章 */
+	.category-section.search-hidden,
+	.post-item.search-hidden { display: none; }
 </style>
+
+<script is:inline>
+	// 内联脚本被 VT 去重后不随换页重跑 → 注册 astro:after-swap 重挂
+	function initJournalSearch() {
+		const input = document.getElementById('journalSearch');
+		if (!input || input.dataset.bound) return;
+		input.dataset.bound = '1';
+
+		const hint = document.getElementById('searchHint');
+		const sections = Array.from(document.querySelectorAll('.category-section'));
+
+		const runFilter = () => {
+			const q = input.value.trim().toLowerCase();
+			let total = 0;
+
+			sections.forEach((section) => {
+				let visible = 0;
+				section.querySelectorAll('.post-item').forEach((item) => {
+					const text = item.textContent.toLowerCase();
+					const hit = !q || text.includes(q);
+					item.classList.toggle('search-hidden', !hit);
+					if (hit) visible++;
+				});
+				section.classList.toggle('search-hidden', q && visible === 0);
+				total += visible;
+			});
+
+			if (hint) {
+				hint.textContent = q
+					? (total ? `找到 ${total} 篇相关日志` : '没有匹配的日志，换个关键词试试')
+					: '';
+			}
+		};
+
+		input.addEventListener('input', runFilter);
+	}
+	initJournalSearch();
+	if (!window.__journalSearchHook) {
+		window.__journalSearchHook = true;
+		document.addEventListener('astro:after-swap', initJournalSearch);
+	}
+</script>

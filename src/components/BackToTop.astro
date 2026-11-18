@@ -6,12 +6,14 @@
 </button>
 
 <script is:inline>
-	(() => {
+	// 内联脚本被 VT 去重后不会随换页重跑 → 注册 astro:after-swap 重挂
+	function initBackToTop() {
 		const btn = document.getElementById('backToTop');
-		if (!btn) return;
+		if (!btn || btn.dataset.bound) return;
+		btn.dataset.bound = '1';
 
-		// View Transitions：换页重新执行。清掉上一个实例的 window 监听，避免累积
-		if (window.__backToTop) { window.__backToTop(); window.__backToTop = null; }
+		// 换页重挂前撤掉上一个实例的滚动监听（旧按钮元素已弃，但监听还挂在 window 上）
+		if (window.__backToTopCleanup) window.__backToTopCleanup();
 
 		// 超过一屏显示浮钮（reduced-motion 也要能回顶，只是不做平滑滚动）
 		const onScroll = () => {
@@ -19,18 +21,19 @@
 		};
 		window.addEventListener('scroll', onScroll, { passive: true });
 		onScroll();
+		window.__backToTopCleanup = () => window.removeEventListener('scroll', onScroll);
 
-		const onClick = () => {
+		btn.addEventListener('click', () => {
 			const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
 			window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
-		};
-		btn.addEventListener('click', onClick);
-
-		window.__backToTop = () => {
-			window.removeEventListener('scroll', onScroll);
-			btn.removeEventListener('click', onClick);
-		};
-	})();
+		});
+	}
+	initBackToTop();
+	if (!window.__backToTopHook) {
+		window.__backToTopHook = true;
+		document.addEventListener('astro:after-swap', initBackToTop);
+	}
+</script>
 </script>
 
 <style>

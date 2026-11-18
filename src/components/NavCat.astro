@@ -64,13 +64,13 @@ const eyeDirs = ['c', 'lu', 'u', 'ru', 'l', 'r', 'ld', 'd', 'rd'];
 </style>
 
 <script is:inline>
-	(() => {
+	// 内联脚本被 VT 去重后不会随换页重跑 → 注册 astro:after-swap 重挂
+	function initNavCat() {
 		const cat = document.getElementById('navCat');
 		const eyes = document.getElementById('catEyes');
 		if (!cat || !eyes) return;
 
-		// View Transitions：换页会重新执行本脚本。先清理上一个实例挂在
-		// document/window 上的监听器与动画帧，避免逐页累积。
+		// 换页重挂前先清理上一个实例挂在 document/window 上的监听器与动画帧
 		if (window.__navCat) { window.__navCat.cleanup(); window.__navCat = null; }
 
 		// 滚动时隐藏趴趴：离开顶部约 60px 即淡出，回顶淡入（不受 reduced-motion 影响）
@@ -142,5 +142,11 @@ const eyeDirs = ['c', 'lu', 'u', 'ru', 'l', 'r', 'ld', 'd', 'rd'];
 				window.removeEventListener('scroll', onScroll);
 			}
 		};
-	})();
+	}
+
+	initNavCat();
+	if (!window.__navCatHook) {
+		window.__navCatHook = true;
+		document.addEventListener('astro:after-swap', () => window.initNavCat());
+	}
 </script>

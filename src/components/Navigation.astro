@@ -28,12 +28,24 @@ const currentPath = Astro.url.pathname;
 </nav>
 
 <script is:inline>
-	document.getElementById('themeToggle')?.addEventListener('click', () => {
-		const html = document.documentElement;
-		const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
-		html.dataset.theme = next;
-		try { localStorage.setItem('theme', next); } catch (e) {}
-	});
+	// View Transitions 下内联脚本若内容相同会被去重、不再重跑，
+	// 导致换页后新按钮没挂事件 → 把初始化包成函数，在 astro:after-swap 后重挂
+	function initThemeToggle() {
+		const btn = document.getElementById('themeToggle');
+		if (!btn || btn.dataset.bound) return;
+		btn.dataset.bound = '1';
+		btn.addEventListener('click', () => {
+			const html = document.documentElement;
+			const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+			html.dataset.theme = next;
+			try { localStorage.setItem('theme', next); } catch (e) {}
+		});
+	}
+	initThemeToggle();
+	if (!window.__themeToggleHook) {
+		window.__themeToggleHook = true;
+		document.addEventListener('astro:after-swap', initThemeToggle);
+	}
 </script>
 
 <style>

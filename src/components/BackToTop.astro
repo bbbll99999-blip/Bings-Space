@@ -1,0 +1,75 @@
+<!-- 回到顶部：滚动超过一屏出现，冰系玻璃浮钮，全站通用 -->
+<button class="back-to-top" id="backToTop" aria-label="回到顶部" title="回到顶部">
+	<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+		<path d="M12 19V5M5 12l7-7 7 7" />
+	</svg>
+</button>
+
+<script is:inline>
+	(() => {
+		const btn = document.getElementById('backToTop');
+		if (!btn) return;
+
+		// 超过一屏显示浮钮（reduced-motion 也要能回顶，只是不做平滑滚动）
+		const onScroll = () => {
+			btn.classList.toggle('visible', window.scrollY > window.innerHeight * 0.8);
+		};
+		window.addEventListener('scroll', onScroll, { passive: true });
+		onScroll();
+
+		btn.addEventListener('click', () => {
+			const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+			window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
+		});
+	})();
+</script>
+
+<style>
+	.back-to-top {
+		position: fixed;
+		right: 2rem;
+		bottom: 2rem;
+		width: 48px;
+		height: 48px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--tile-bg);
+		color: var(--grad-start);
+		border: 1px solid var(--card-border);
+		border-radius: 50%;
+		cursor: pointer;
+		z-index: 90; /* 低于导航(100)与灯箱(1000)，不挡关键交互 */
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+		opacity: 0;
+		transform: translateY(16px);
+		pointer-events: none;
+		transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	.back-to-top.visible {
+		opacity: 1;
+		transform: translateY(0);
+		pointer-events: auto;
+	}
+
+	/* 悬停：冰霜微光，与全站结霜语言一致 */
+	.back-to-top:hover {
+		background: var(--grad-start);
+		color: #fff;
+		transform: translateY(-4px);
+		box-shadow:
+			0 10px 24px rgba(59, 130, 246, 0.35),
+			0 0 16px rgba(147, 197, 253, 0.45);
+	}
+
+	@media (max-width: 768px) {
+		.back-to-top {
+			right: 1rem;
+			bottom: 1rem;
+			width: 42px;
+			height: 42px;
+		}
+	}
+</style>

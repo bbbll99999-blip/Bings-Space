@@ -5,7 +5,7 @@
 // 可访问性：prefers-reduced-motion 时不创建
 ---
 
-<canvas class="ice-field" id="iceField" aria-hidden="true"></canvas>
+<canvas class="ice-field" id="iceField" aria-hidden="true" transition:persist="icefield"></canvas>
 
 <style>
 	.ice-field {
@@ -24,6 +24,13 @@
 
 		const canvas = document.getElementById('iceField');
 		if (!canvas) return;
+
+		// View Transitions：canvas 经 transition:persist 跨页保留（同一元素）。
+		// 脚本会随换页重新执行——若发现旧实例还挂在同一块画布上，直接复用，不重置雪花。
+		if (window.__iceField && window.__iceField.canvas === canvas) return;
+		// 画布被换成新元素（如从 persist 失效的路径进入）→ 先清理旧实例的监听与动画
+		if (window.__iceField) { window.__iceField.cleanup(); window.__iceField = null; }
+
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 
@@ -236,21 +243,33 @@
 			if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
 		};
 
-		window.addEventListener('resize', resize, { passive: true });
-		window.addEventListener('mousemove', (e) => {
+		const onResize = () => resize();
+		const onMouseMove = (e) => {
 			if (lastMX !== null) {
 				mouse.vx = Math.max(-50, Math.min(50, e.clientX - lastMX));
 				mouse.vy = Math.max(-50, Math.min(50, e.clientY - lastMY));
 			}
 			lastMX = mouse.x = e.clientX;
 			lastMY = mouse.y = e.clientY;
-		}, { passive: true });
+		};
+		const onVisibility = () => { document.hidden ? stop() : start(); };
 
-		document.addEventListener('visibilitychange', () => {
-			document.hidden ? stop() : start();
-		});
+		window.addEventListener('resize', onResize, { passive: true });
+		window.addEventListener('mousemove', onMouseMove, { passive: true });
+		document.addEventListener('visibilitychange', onVisibility);
 
 		resize();
 		start();
+
+		// 换页时由下一个实例调用：撤销监听、停掉动画循环
+		window.__iceField = {
+			canvas,
+			cleanup() {
+				stop();
+				window.removeEventListener('resize', onResize);
+				window.removeEventListener('mousemove', onMouseMove);
+				document.removeEventListener('visibilitychange', onVisibility);
+			}
+		};
 	})();
 </script>

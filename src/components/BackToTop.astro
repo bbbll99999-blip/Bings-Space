@@ -10,6 +10,9 @@
 		const btn = document.getElementById('backToTop');
 		if (!btn) return;
 
+		// View Transitions：换页重新执行。清掉上一个实例的 window 监听，避免累积
+		if (window.__backToTop) { window.__backToTop(); window.__backToTop = null; }
+
 		// 超过一屏显示浮钮（reduced-motion 也要能回顶，只是不做平滑滚动）
 		const onScroll = () => {
 			btn.classList.toggle('visible', window.scrollY > window.innerHeight * 0.8);
@@ -17,10 +20,16 @@
 		window.addEventListener('scroll', onScroll, { passive: true });
 		onScroll();
 
-		btn.addEventListener('click', () => {
+		const onClick = () => {
 			const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
 			window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
-		});
+		};
+		btn.addEventListener('click', onClick);
+
+		window.__backToTop = () => {
+			window.removeEventListener('scroll', onScroll);
+			btn.removeEventListener('click', onClick);
+		};
 	})();
 </script>
 

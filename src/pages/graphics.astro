@@ -200,31 +200,35 @@ import graphicWorks from '../data/graphics.js';
 	}
 
 	// 事件委托：缩略图点击 / 键盘回车
-	document.addEventListener('click', (e) => {
-		const item = e.target.closest('.preview-item');
-		if (!item) return;
-		openLightboxFromEl(item);
-	});
+	// View Transitions 下内联脚本每次换页都重跑，document 级委托只挂一次
+	if (!window.__lightboxDelegated) {
+		window.__lightboxDelegated = true;
+		document.addEventListener('click', (e) => {
+			const item = e.target.closest('.preview-item');
+			if (!item) return;
+			openLightboxFromEl(item);
+		});
 
-	document.addEventListener('keydown', (e) => {
-		const lightbox = document.getElementById('lightbox');
-		const isOpen = lightbox.classList.contains('active');
+		document.addEventListener('keydown', (e) => {
+			const lightbox = document.getElementById('lightbox');
+			const isOpen = lightbox.classList.contains('active');
 
-		if (e.key === 'Escape') { closeLightbox(); return; }
+			if (e.key === 'Escape') { closeLightbox(); return; }
 
-		if (isOpen) {
-			if (e.key === 'ArrowLeft') { e.preventDefault(); navigateLightbox(-1); return; }
-			if (e.key === 'ArrowRight') { e.preventDefault(); navigateLightbox(1); return; }
-		}
-
-		if (e.key === 'Enter' || e.key === ' ') {
-			const item = e.target.closest?.('.preview-item');
-			if (item) {
-				e.preventDefault();
-				openLightboxFromEl(item);
+			if (isOpen) {
+				if (e.key === 'ArrowLeft') { e.preventDefault(); navigateLightbox(-1); return; }
+				if (e.key === 'ArrowRight') { e.preventDefault(); navigateLightbox(1); return; }
 			}
-		}
-	});
+
+			if (e.key === 'Enter' || e.key === ' ') {
+				const item = e.target.closest?.('.preview-item');
+				if (item) {
+					e.preventDefault();
+					openLightboxFromEl(item);
+				}
+			}
+		});
+	}
 </script>
 
 <style>

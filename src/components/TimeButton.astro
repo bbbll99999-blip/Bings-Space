@@ -4,14 +4,17 @@
 </div>
 
 <script>
+  // 模块脚本全站只执行一次；View Transitions 换页后 DOM 已换新，
+  // 用 window 上的旧 interval 句柄做清理，防止多个 interval 并跑
   function updateTime() {
     const now = new Date();
     const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false });
     const el = document.getElementById('liveTime');
     if (el) el.textContent = timeStr;
   }
+  if (window.__timeTimer) clearInterval(window.__timeTimer);
   updateTime();
-  setInterval(updateTime, 1000);
+  window.__timeTimer = setInterval(updateTime, 1000);
 </script>
 
 <style>

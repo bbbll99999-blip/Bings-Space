@@ -4,7 +4,7 @@
 // prefers-reduced-motion 不创建；无粒子时 rAF 完全停止
 ---
 
-<canvas class="ice-burst" id="iceBurst" aria-hidden="true"></canvas>
+<canvas class="ice-burst" id="iceBurst" aria-hidden="true" transition:persist="iceburst"></canvas>
 
 <style>
 	.ice-burst {
@@ -23,6 +23,11 @@
 
 		const canvas = document.getElementById('iceBurst');
 		if (!canvas) return;
+
+		// View Transitions 生命周期：persist 后同一画布 → 复用旧实例；新画布 → 清理旧监听
+		if (window.__iceBurst && window.__iceBurst.canvas === canvas) return;
+		if (window.__iceBurst) { window.__iceBurst.cleanup(); window.__iceBurst = null; }
+
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 
@@ -109,6 +114,16 @@
 			else rafId = null;
 		};
 
-		window.addEventListener('click', (e) => burst(e.clientX, e.clientY), { passive: true });
+		const onClick = (e) => burst(e.clientX, e.clientY);
+		window.addEventListener('click', onClick, { passive: true });
+
+		// 换页清理：停 rAF、撤监听
+		window.__iceBurst = {
+			canvas,
+			cleanup() {
+				if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+				window.removeEventListener('click', onClick);
+			}
+		};
 	})();
 </script>

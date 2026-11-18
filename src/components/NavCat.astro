@@ -69,6 +69,10 @@ const eyeDirs = ['c', 'lu', 'u', 'ru', 'l', 'r', 'ld', 'd', 'rd'];
 		const eyes = document.getElementById('catEyes');
 		if (!cat || !eyes) return;
 
+		// View Transitions：换页会重新执行本脚本。先清理上一个实例挂在
+		// document/window 上的监听器与动画帧，避免逐页累积。
+		if (window.__navCat) { window.__navCat.cleanup(); window.__navCat = null; }
+
 		// 滚动时隐藏趴趴：离开顶部约 60px 即淡出，回顶淡入（不受 reduced-motion 影响）
 		const onScroll = () => {
 			cat.classList.toggle('cat-hidden', window.scrollY > 60);
@@ -76,7 +80,10 @@ const eyeDirs = ['c', 'lu', 'u', 'ru', 'l', 'r', 'ld', 'd', 'rd'];
 		window.addEventListener('scroll', onScroll, { passive: true });
 		onScroll();
 
-		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			window.__navCat = { cleanup() { window.removeEventListener('scroll', onScroll); } };
+			return;
+		}
 
 		const frames = {};
 		eyes.querySelectorAll('.eye-frame').forEach((f) => (frames[f.dataset.dir] = f));
@@ -126,5 +133,14 @@ const eyeDirs = ['c', 'lu', 'u', 'ru', 'l', 'r', 'ld', 'd', 'rd'];
 		};
 
 		document.addEventListener('mousemove', onMove, { passive: true });
+
+		// 换页清理：撤掉挂在 document/window 上的监听器，停掉动画帧
+		window.__navCat = {
+			cleanup() {
+				if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+				document.removeEventListener('mousemove', onMove);
+				window.removeEventListener('scroll', onScroll);
+			}
+		};
 	})();
 </script>

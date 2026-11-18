@@ -8,6 +8,7 @@ const { title = "Bing's Space - 冰冰蓝的小角落", description = '冰冰蓝
 import IceField from '../components/IceField.astro';
 import IceBurst from '../components/IceBurst.astro';
 import BackToTop from '../components/BackToTop.astro';
+import { ClientRouter } from 'astro:transitions';
 ---
 
 <!doctype html>
@@ -22,20 +23,28 @@ import BackToTop from '../components/BackToTop.astro';
 		<!-- 主题预置：在首帧渲染前确定 light/dark，避免闪白/闪黑 -->
 		<script is:inline>
 			(() => {
-				try {
-					// 优先级：URL 参数（调试用）> localStorage > 系统偏好
-					const urlTheme = new URLSearchParams(location.search).get('theme');
-					const saved = localStorage.getItem('theme');
-					const theme = urlTheme || saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-					document.documentElement.dataset.theme = theme;
-				} catch (e) {
-					document.documentElement.dataset.theme = 'light';
-				}
+				const applyTheme = () => {
+					try {
+						// 优先级：URL 参数（调试用）> localStorage > 系统偏好
+						const urlTheme = new URLSearchParams(location.search).get('theme');
+						const saved = localStorage.getItem('theme');
+						const theme = urlTheme || saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+						document.documentElement.dataset.theme = theme;
+					} catch (e) {
+						document.documentElement.dataset.theme = 'light';
+					}
+				};
+				applyTheme();
+				// View Transitions 换页会用新文档的 html 属性覆盖当前值，
+				// 而新文档是服务端渲染的、没有 data-theme —— 换页完成后立即补上，防止闪回亮色
+				document.addEventListener('astro:after-swap', applyTheme);
 			})();
 		</script>
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+		<!-- 页面切换动画：Astro View Transitions（不支持的浏览器自动回退为普通跳转） -->
+		<ClientRouter />
 	</head>
 	<body>
 		<div class="background-gradient"></div>
